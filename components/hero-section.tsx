@@ -1,0 +1,81 @@
+import { Button } from "@/components/ui/button"
+
+export function HeroSection() {
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background/95 to-primary/10 py-12 sm:py-16 md:py-24 lg:py-32 min-h-dvh flex items-center justify-center">
+      <div className="absolute inset-0 opacity-30">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+            backgroundSize: "50px 50px",
+          }}
+        ></div>
+      </div>
+
+      <div className="container px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center justify-center text-center">
+        <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8 md:space-y-12 flex flex-col items-center">
+          <div className="space-y-4 md:space-y-6">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
+              <span className="text-sm font-medium text-primary">🚀 Revolutionary Sales Platform</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight text-balance">
+              <span className="block text-foreground">Stop losing</span>
+              <span className="block bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-pulse">
+                MANDATES
+              </span>
+              <span className="block text-foreground/80 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light mt-2">
+                Sell faster, for more.
+              </span>
+            </h1>
+          </div>
+
+          <div className="max-w-3xl space-y-4">
+            <p className="text-lg sm:text-xl md:text-2xl text-foreground/70 leading-relaxed text-pretty">
+              The all-in-one solution that gives you listings that buyers negotiate and makes you sell at
+              <span className="text-primary font-semibold"> higher prices</span>.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-foreground/60">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>AI-Powered Listings</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Smart Negotiations</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Higher Conversions</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 sm:pt-8 md:pt-12 w-full">
+            <Button
+              size="lg"
+              className="group relative overflow-hidden w-full sm:w-auto px-8 md:px-16 text-lg md:text-xl py-4 md:py-6 min-h-[56px] bg-transparent backdrop-blur-sm border-2 border-white/20 hover:border-white/40 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            >
+              <span className="relative z-10">Start Your Free Trial</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </Button>
+
+            <button className="text-foreground/70 hover:text-foreground transition-colors duration-200 text-lg underline underline-offset-4">
+              Watch Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute top-20 right-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 left-20 w-32 h-32 sm:w-48 sm:h-48 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gradient-to-tr from-pink-500/15 to-blue-500/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/3 right-1/3 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-xl animate-bounce"></div>
+      <div className="absolute bottom-1/3 left-1/2 w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40 bg-gradient-to-l from-blue-400/15 to-purple-400/15 rounded-full blur-2xl animate-pulse delay-500"></div>
+    </section>
+  )
+}
