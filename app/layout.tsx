@@ -9,9 +9,9 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "MEDIA IMMO",
+  description: "Real State Media Buissness",
+  
 };
 
 export default function RootLayout({
