@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  scroll-behavior: smooth;
+}
+
+
 :root {
   /* Updated color tokens to match the design brief with cyan primary and orange accent */
   --background: oklch(0.145 0.014 258.338); /* #1f2937 - Dark background */

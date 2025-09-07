@@ -27,7 +27,7 @@ export function Header() {
         <nav className="hidden md:flex items-center justify-center flex-grow mx-8">
           <div className="flex items-center space-x-6 lg:space-x-8">
             <a
-              href="#features"
+              href="#pricing"
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
               Our Offers
@@ -86,7 +86,7 @@ export function Header() {
           <nav className="container px-4 py-6 mx-auto max-w-7xl">
             <div className="flex flex-col items-center space-y-4 text-center">
               <a
-                href="#features"
+                href="#pricing"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
