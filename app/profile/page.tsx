@@ -1,24 +1,32 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, Calendar, CreditCard, AlertTriangle, Settings, Shield } from "lucide-react"
+import { User, Calendar, CreditCard, AlertTriangle, Settings, Shield, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function ProfilePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
 
-  // Mock user data - replace with actual user data from your auth system
   const [userData, setUserData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    joinDate: "2024-01-15",
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: "user" as "user" | "admin",
+    joinDate: "",
     subscription: {
       plan: "Independent",
       price: "€6.65/month",
@@ -28,9 +36,87 @@ export default function ProfilePage() {
     },
   })
 
-  const handleSaveProfile = () => {
-    setIsEditing(false)
-    // Add your profile update logic here
+  useEffect(() => {
+    if (status === "loading") return
+
+    if (status === "unauthenticated") {
+      router.push("/login")
+      return
+    }
+
+    if (session?.user) {
+      fetchUserProfile()
+    }
+  }, [session, status, router])
+
+  const fetchUserProfile = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/user/profile")
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile")
+      }
+
+      const data = await response.json()
+      const user = data.user
+
+      setUserData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        role: user.role || "user",
+        joinDate: user.createdAt || new Date().toISOString(),
+        subscription: {
+          plan: "Independent",
+          price: "€6.65/month",
+          status: "Active",
+          nextBilling: "2024-02-15",
+          features: ["Advanced Analytics", "Priority Support", "Custom Integrations"],
+        },
+      })
+    } catch (error) {
+      console.error("Error fetching profile:", error)
+      toast.error("Failed to load profile data")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true)
+
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to update profile")
+      }
+
+      const data = await response.json()
+      toast.success("Profile updated successfully!")
+      setIsEditing(false)
+
+      // Update session data if needed
+      if (session?.user) {
+        session.user.name = `${userData.firstName} ${userData.lastName}`
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to update profile")
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancelSubscription = () => {
@@ -40,6 +126,18 @@ export default function ProfilePage() {
       ...prev,
       subscription: { ...prev.subscription, status: "Cancelled" },
     }))
+    toast.success("Subscription cancelled successfully")
+  }
+
+  if (status === "loading" || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading profile...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -47,7 +145,7 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="text-center space-y-3 sm:space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent px-4 sm:px-0">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-black dark:text-transparent px-4 sm:px-0">
             Profile Settings
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base px-4 sm:px-0">
@@ -68,13 +166,26 @@ export default function ProfilePage() {
             <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">
-                    Full Name
+                  <Label htmlFor="firstName" className="text-sm font-medium">
+                    First Name
                   </Label>
                   <Input
-                    id="name"
-                    value={userData.name}
-                    onChange={(e) => setUserData((prev) => ({ ...prev, name: e.target.value }))}
+                    id="firstName"
+                    value={userData.firstName}
+                    onChange={(e) => setUserData((prev) => ({ ...prev, firstName: e.target.value }))}
+                    disabled={!isEditing}
+                    className="bg-background/50 border-primary/30 h-10 sm:h-11"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-sm font-medium">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={userData.lastName}
+                    onChange={(e) => setUserData((prev) => ({ ...prev, lastName: e.target.value }))}
                     disabled={!isEditing}
                     className="bg-background/50 border-primary/30 h-10 sm:h-11"
                   />
@@ -88,10 +199,20 @@ export default function ProfilePage() {
                     id="email"
                     type="email"
                     value={userData.email}
-                    onChange={(e) => setUserData((prev) => ({ ...prev, email: e.target.value }))}
-                    disabled={!isEditing}
-                    className="bg-background/50 border-primary/30 h-10 sm:h-11"
+                    disabled={true}
+                    className="bg-background/30 border-primary/20 h-10 sm:h-11 opacity-60"
                   />
+                  <p className="text-xs text-muted-foreground">Email cannot be changed</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Role</Label>
+                  <div className="flex items-center gap-2 p-3 bg-background/50 border border-primary/30 rounded-md min-h-[44px]">
+                    <Shield className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <Badge variant={userData.role === "admin" ? "default" : "secondary"}>
+                      {userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -111,10 +232,29 @@ export default function ProfilePage() {
                   </Button>
                 ) : (
                   <>
-                    <Button onClick={handleSaveProfile} className="w-full sm:flex-1 h-11">
-                      Save Changes
+                    <Button
+                      onClick={handleSaveProfile}
+                      disabled={saving || !userData.firstName.trim() || !userData.lastName.trim()}
+                      className="w-full sm:flex-1 h-11 text-foreground/90 hover:text-primary"
+                    >
+                      {saving ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
                     </Button>
-                    <Button onClick={() => setIsEditing(false)} variant="outline" className="w-full sm:w-auto h-11">
+                    <Button
+                      onClick={() => {
+                        setIsEditing(false)
+                        fetchUserProfile() // Reset to original data
+                      }}
+                      variant="outline"
+                      className="w-full sm:w-auto h-11"
+                      disabled={saving}
+                    >
                       Cancel
                     </Button>
                   </>
@@ -138,7 +278,7 @@ export default function ProfilePage() {
                   <span className="text-sm font-medium">Current Plan</span>
                   <Badge
                     variant={userData.subscription.status === "Active" ? "default" : "destructive"}
-                    className="bg-gradient-to-r from-primary to-secondary text-white flex-shrink-0"
+                    className="bg-black dark:bg-gradient-to-r from-primary to-secondary text-white flex-shrink-0"
                   >
                     {userData.subscription.plan}
                   </Badge>
@@ -153,7 +293,7 @@ export default function ProfilePage() {
                   <span className="text-sm font-medium">Status</span>
                   <Badge
                     variant={userData.subscription.status === "Active" ? "default" : "destructive"}
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 bg-black"
                   >
                     {userData.subscription.status}
                   </Badge>

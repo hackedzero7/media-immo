@@ -7,6 +7,8 @@ import { Suspense } from "react";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import AuthSessionProvider from "@/components/providers/session-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "MEDIA IMMO",
@@ -22,6 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <AuthSessionProvider>
         <Suspense fallback={null}>
         <div className="min-h-screen">
           <Header />
@@ -29,6 +33,8 @@ export default function RootLayout({
           <Footer />
           </div>
         </Suspense>
+        </AuthSessionProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>
