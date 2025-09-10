@@ -3,21 +3,23 @@ import { Check, X } from "lucide-react"
 
 export function ComparisonTable() {
   const features = [
-    { name: "Business & key Benefits", discovery: true, independent: true, agency: true },
-    { name: "Unlimited Messaging", discovery: false, independent: true, agency: true },
-    { name: "No annoying Ads", discovery: false, independent: true, agency: true },
-    { name: "Unlimited services", discovery: false, independent: false, agency: true },
+    // Bonuses & Key Benefits
+    { name: "Bonus at the 4th shooting", discovery: false, independent: "Choice", agency: "Included by agent" },
+    { name: "11th shooting free", discovery: false, independent: false, agency: true },
+    { name: "Discount on services", discovery: false, independent: "-20%", agency: "-20%" },
     { name: "Social media kit", discovery: false, independent: true, agency: true },
-    { name: "Services included", discovery: false, independent: false, agency: true },
-    { name: "Monthly live webinars", discovery: false, independent: true, agency: true },
-    { name: "Professional personal advising", discovery: false, independent: true, agency: true },
-    { name: "Mini site by property", discovery: false, independent: false, agency: true },
-    { name: "24 hour delivery guaranteed", discovery: false, independent: true, agency: true },
-    { name: "Dedicated advisor", discovery: false, independent: false, agency: true },
-    { name: "Management & Support", discovery: false, independent: false, agency: true },
+
+    // Services Included
+    { name: "Shooting of good (Test)", discovery: "1 (offered)", independent: false, agency: false },
+    { name: "Professional portrait shooting", discovery: false, independent: "Biannual", agency: "Team (Semi-annual)" },
+    { name: "Mini-site by property", discovery: "1", independent: "Unlimited", agency: "Unlimited" },
+    { name: "24-hour delivery guaranteed", discovery: false, independent: true, agency: true },
+    { name: "Dedicated advisor", discovery: false, independent: true, agency: true },
+
+    // Management & Support
     { name: "Monthly Webinars", discovery: false, independent: true, agency: true },
     { name: "User accounts", discovery: "1", independent: "1", agency: "Unlimited" },
-    { name: "Support", discovery: "Email", independent: "Email & WhatsApp", agency: "24/7 Priority" },
+    { name: "Support", discovery: "E-mail", independent: "Email & WhatsApp", agency: "Priority 24/7" },
   ]
 
   return (
@@ -25,7 +27,7 @@ export function ComparisonTable() {
       <div className="container px-4 flex flex-col items-center">
         <div className="text-center mb-16 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl xl:text-6xl text-balance">
-            The game-changing formula for your career
+            Compare our plans at a glance
           </h2>
           <p className="text-muted-foreground mt-4 text-lg xl:text-xl">
             Find the plan that perfectly matches your ambitions.
@@ -58,7 +60,11 @@ export function ComparisonTable() {
                 <tbody>
                   {features.map((feature, index) => (
                     <tr key={index} className="border-b">
-                      <td className="p-4 lg:p-6 xl:p-8 font-medium text-sm lg:text-base xl:text-lg">{feature.name}</td>
+                      <td className="p-4 lg:p-6 xl:p-8 font-medium text-sm lg:text-base xl:text-lg">
+                        {feature.name}
+                      </td>
+
+                      {/* Discovery */}
                       <td className="p-4 lg:p-6 xl:p-8 text-center">
                         {typeof feature.discovery === "boolean" ? (
                           feature.discovery ? (
@@ -70,6 +76,8 @@ export function ComparisonTable() {
                           <span className="text-sm lg:text-base xl:text-lg">{feature.discovery}</span>
                         )}
                       </td>
+
+                      {/* Independent */}
                       <td className="p-4 lg:p-6 xl:p-8 text-center bg-primary/20 text-slate-800">
                         {typeof feature.independent === "boolean" ? (
                           feature.independent ? (
@@ -81,6 +89,8 @@ export function ComparisonTable() {
                           <span className="text-sm lg:text-base xl:text-lg text-slate-800">{feature.independent}</span>
                         )}
                       </td>
+
+                      {/* Agency */}
                       <td className="p-4 lg:p-6 xl:p-8 text-center">
                         {typeof feature.agency === "boolean" ? (
                           feature.agency ? (

@@ -1,23 +1,26 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Target, Zap, TrendingUp } from "lucide-react"
+import { Target, Clock, Zap } from "lucide-react"
 
 export function BenefitsSection() {
   const benefits = [
     {
       icon: Target,
       title: "Unbeatable Brand Image",
-      description: "Sell at unbeatable prices that justify a higher commission.",
+      description:
+        "Trigger the crush even before the visit with professional visuals that justify a higher selling price.",
+    },
+    {
+      icon: Clock,
+      title: "Free Time, Maximized Sales",
+      description:
+        "Stop juggling. We manage your entire media production within 24 hours so you can focus on negotiating.",
     },
     {
       icon: Zap,
-      title: "Fast, Time, Maximized Sales",
-      description: "Reduce prospecting efforts by 80% and get more listings from your existing.",
-    },
-    {
-      icon: TrendingUp,
       title: "Marketing on Autopilot",
-      description: "Automated lead generation and marketing that delivers results while you sleep.",
+      description:
+        "Dominate social media and portals effortlessly with our mini-sites and marketing kits delivered with every shoot.",
     },
   ]
 
