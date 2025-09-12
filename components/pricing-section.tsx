@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Crown, ChevronDown, ChevronUp } from "lucide-react";
 
 export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [expandedPlan, setExpandedPlan] = useState<number | null>(null);
 
   const plans = [
     {
@@ -14,7 +14,7 @@ export function PricingSection() {
       monthly: "0€",
       annual: "0€",
       period: "",
-      description: "Test our quality on your first property, it’s free.",
+      description: "Test our quality on your first property, it's free.",
       features: [
         "1 free photo shoot for 1 property (10-15 photos)",
         "Dedicated mini-website for this property",
@@ -22,6 +22,7 @@ export function PricingSection() {
       ],
       cta: "Try it risk-free",
       popular: false,
+      isPremium: false,
     },
     {
       name: "Independent",
@@ -41,6 +42,7 @@ export function PricingSection() {
       ],
       cta: "Subscribe",
       popular: true,
+      isPremium: true,
     },
     {
       name: "Agency",
@@ -59,11 +61,16 @@ export function PricingSection() {
       ],
       cta: "Contact an expert",
       popular: false,
+      isPremium: true,
     },
   ];
 
+  const toggleFeatures = (planIndex: number) => {
+    setExpandedPlan(expandedPlan === planIndex ? null : planIndex);
+  };
+
   return (
-    <section className="py-16 sm:py-20 md:py-24 xl:py-32 bg-gradient-to-b from-blue-50 to-indigo-100/50 dark:from-background dark:to-background/50 relative overflow-hidden flex flex-col items-center justify-center min-h-screen">
+    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50/80 to-indigo-100 dark:from-background dark:via-background/95 dark:to-primary/5 py-16 sm:py-20 md:py-24 xl:py-32 flex flex-col items-center justify-center min-h-screen">
       <div className="container px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 flex flex-col items-center justify-center">
         {/* Heading */}
         <div className="text-center mb-12 sm:mb-16 xl:mb-24 w-full flex flex-col items-center">
@@ -74,14 +81,13 @@ export function PricingSection() {
             A premium membership for a premium lifestyle, for professionals.
           </p>
 
-          {/* 🔹 Monthly / Annual Toggle */}
           <div className="flex items-center gap-4 mt-6">
             <Button
               onClick={() => setIsAnnual(false)}
               className={`px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base md:text-lg rounded-full transition-all duration-300 ${
                 !isAnnual
-                  ? "bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border-blue-400 dark:border-primary/50 shadow-lg"
-                  : "bg-white dark:bg-background text-slate-700 dark:text-foreground border-2 border-blue-400 dark:border-primary/50 hover:bg-gradient-to-r hover:from-blue-500/90 hover:to-purple-600/90 hover:text-white"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 dark:from-primary dark:to-secondary text-white shadow-lg border-0 hover:from-blue-600 hover:to-purple-700"
+                  : "bg-white dark:bg-card text-slate-800 dark:text-foreground border-2 border-blue-400 dark:border-primary/50 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 dark:hover:from-primary dark:hover:to-secondary hover:text-white backdrop-blur-sm"
               }`}
               variant={!isAnnual ? "default" : "outline"}
             >
@@ -92,101 +98,133 @@ export function PricingSection() {
               onClick={() => setIsAnnual(true)}
               className={`px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base md:text-lg rounded-full transition-all duration-300 ${
                 isAnnual
-                  ? "bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border-blue-400 dark:border-primary/50 shadow-lg"
-                  : "bg-white dark:bg-background text-slate-700 dark:text-foreground border-2 border-blue-400 dark:border-primary/50 hover:bg-gradient-to-r hover:from-blue-500/90 hover:to-purple-600/90 hover:text-white"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 dark:from-primary dark:to-secondary text-white shadow-lg border-0 hover:from-blue-600 hover:to-purple-700"
+                  : "bg-white dark:bg-card text-slate-800 dark:text-foreground border-2 border-blue-400 dark:border-primary/50 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 dark:hover:from-primary dark:hover:to-secondary hover:text-white backdrop-blur-sm"
               }`}
               variant={isAnnual ? "default" : "outline"}
             >
               Annual{" "}
-              <span className="ml-1 text-green-500 font-semibold">
+              <span className="ml-1 text-green-600 dark:text-green-400 font-semibold">
                 Save 15%
               </span>
             </Button>
           </div>
         </div>
 
-        {/* Plans */}
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-3 xl:gap-12 max-w-7xl xl:max-w-8xl mx-auto w-full place-items-center">
-          {plans.map((plan, index) => (
-            <Card
-              key={index}
-              className={`relative backdrop-blur-xl w-full max-w-sm mx-auto ${
-                plan.popular
-                  ? "bg-gradient-to-br from-white to-blue-50 dark:from-card/80 dark:to-primary/5 border-blue-300 dark:border-primary/30 shadow-2xl lg:scale-105 xl:scale-110 shadow-blue-500/20 dark:shadow-primary/20"
-                  : "bg-white/90 dark:bg-card/60 hover:bg-white dark:hover:bg-card/80 border-blue-200 dark:border-border/20"
-              } transition-all duration-500 hover:shadow-xl hover:scale-102`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-primary dark:to-secondary text-white dark:text-primary-foreground border-0 shadow-lg">
-                  Most Popular
-                </Badge>
-              )}
+        <div className="w-full max-w-sm sm:max-w-6xl mx-auto relative">
+          <div className="flex justify-center mb-6 sm:mb-0 sm:absolute sm:-top-4 sm:left-1/2 sm:-translate-x-1/2 sm:z-20">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-primary dark:to-secondary text-white px-6 py-2 text-sm font-medium rounded-full shadow-lg">
+              By popularity
+            </div>
+          </div>
 
-              <CardHeader className="text-center pb-6 sm:pb-8 xl:pb-10 px-4 sm:px-6 xl:px-8">
-                <CardTitle className="text-xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-card-foreground">
-                  {plan.name}
-                </CardTitle>
-                <div className="mt-4 xl:mt-6">
-                  <span
-                    className={`text-4xl sm:text-5xl xl:text-6xl font-bold ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 dark:from-primary dark:to-secondary bg-clip-text text-transparent"
-                        : "text-slate-900 dark:text-card-foreground"
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 items-center sm:items-stretch">
+            {plans.map((plan, index) => (
+              <Card
+                key={index}
+                className={`relative w-full max-w-sm mx-auto sm:mx-0 sm:flex-1 transition-all duration-700 hover:shadow-2xl ${
+                  plan.isPremium
+                    ? "bg-white/95 dark:bg-card/90 backdrop-blur-xl border-2 border-blue-200 dark:border-primary/30 hover:border-blue-400 dark:hover:border-primary/50 hover:shadow-blue-500/30 dark:hover:shadow-primary/30 hover:scale-105 hover:-translate-y-2"
+                    : "bg-white/95 dark:bg-card/90 backdrop-blur-xl border-2 border-blue-200 dark:border-primary/30 hover:border-blue-400 dark:hover:border-primary/50 hover:shadow-blue-500/30 dark:hover:shadow-primary/30 hover:scale-105 hover:-translate-y-2"
+                } ${plan.popular ? "sm:scale-105 shadow-2xl" : ""}`}
+              >
+                {plan.isPremium && (
+                  <div className="absolute -top-3 right-4">
+                    <Crown className="h-8 w-8 text-blue-500 dark:text-primary fill-blue-400 dark:fill-primary/80" />
+                  </div>
+                )}
+
+                <CardHeader className="text-center pb-6 px-6 relative overflow-hidden">
+                  <div
+                    className={`text-xs mb-2 font-medium ${
+                      plan.isPremium
+                        ? "text-slate-700 dark:text-muted-foreground"
+                        : "text-slate-600 dark:text-muted-foreground"
                     }`}
                   >
-                    {isAnnual ? plan.annual : plan.monthly}
-                  </span>
-                  <span className="text-slate-600 dark:text-muted-foreground text-base sm:text-lg xl:text-xl">
-                    {plan.period}
-                  </span>
-                </div>
-                <p className="text-sm xl:text-base text-slate-600 dark:text-muted-foreground mt-2 xl:mt-4 px-2 sm:px-0">
-                  {plan.description}
-                </p>
-              </CardHeader>
+                    {/* For one person only */}
+                  </div>
 
-              <CardContent className="space-y-4 sm:space-y-6 xl:space-y-8 px-4 sm:px-6 xl:px-8">
-                <ul className="space-y-4 xl:space-y-6">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li
-                      key={featureIndex}
-                      className="flex items-start gap-3 xl:gap-4"
-                    >
-                      <Check
-                        className={`h-5 w-5 xl:h-6 xl:w-6 mt-0.5 flex-shrink-0 ${
-                          plan.popular
-                            ? "text-blue-600 dark:text-blue-400"
-                            : "text-purple-600 dark:text-purple-400"
-                        }`}
-                      />
-                      <span className="text-sm xl:text-base text-pretty text-slate-800 dark:text-card-foreground">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                  <CardTitle className="text-2xl font-bold text-slate-900 dark:text-foreground mb-4">
+                    {plan.name}
+                  </CardTitle>
+                  <p className="text-sm text-slate-700 dark:text-muted-foreground mb-6">
+                    {plan.description}
+                  </p>
 
-                {/* Button */}
-                <Button
-                  className={`w-full transition-all duration-300 py-3 sm:py-4 xl:py-5 xl:text-lg ${
-                    plan.popular
-                      ? "bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border-blue-400 dark:border-primary/50 shadow-lg hover:scale-105"
-                      : "border-2 border-blue-400 dark:border-primary/50 text-blue-700 dark:text-foreground bg-white dark:bg-background hover:bg-gradient-to-r hover:from-blue-500/90 hover:to-purple-600/90 hover:text-white dark:hover:from-primary/50 dark:hover:to-secondary/50"
-                  }`}
-                  variant={plan.popular ? "default" : "outline"}
-                  size="lg"
-                >
-                  {plan.cta}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold text-slate-900 dark:text-foreground">
+                      {isAnnual ? plan.annual : plan.monthly}
+                    </span>
+                    <span className="text-slate-700 dark:text-muted-foreground text-base ml-1">
+                      {plan.period}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`w-full mb-6 py-3 text-base font-medium rounded-lg transition-all duration-300 text-center cursor-pointer ${
+                      plan.isPremium
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600 dark:from-primary dark:to-secondary hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/40 dark:hover:shadow-primary/40"
+                        : "bg-gradient-to-r from-slate-700 to-slate-800 dark:from-muted dark:to-muted/80 hover:from-slate-800 hover:to-slate-900 text-white shadow-lg"
+                    }`}
+                  >
+                    {plan.cta}
+                  </div>
+
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-blue-200/40 to-purple-200/40 dark:from-primary/20 dark:to-secondary/20 rounded-full blur-2xl group-hover:from-blue-400/50 group-hover:to-purple-400/50 dark:group-hover:from-primary/30 dark:group-hover:to-secondary/30 transition-all duration-700"></div>
+                </CardHeader>
+
+                <CardContent className="px-6 pb-6">
+                  <button
+                    onClick={() => toggleFeatures(index)}
+                    className="flex items-center justify-between w-full text-sm font-medium 
+             text-slate-900 dark:text-foreground 
+             bg-gray-100 dark:bg-slate-800 
+             mb-4 px-3 py-2 
+             rounded-lg 
+             hover:text-blue-600 dark:hover:text-primary 
+             transition-colors sm:cursor-default 
+             sm:hover:text-slate-900 dark:sm:hover:text-foreground"
+                  >
+                    <span>Main features</span>
+                    <div className="sm:hidden">
+                      {expandedPlan === index ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </div>
+                  </button>
+
+                  <div
+                    className={`sm:block ${
+                      expandedPlan === index ? "block" : "hidden"
+                    }`}
+                  >
+                    <ul className="space-y-3 animate-in slide-in-from-top-2 duration-200 sm:animate-none">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li
+                          key={featureIndex}
+                          className="flex items-start gap-3"
+                        >
+                          <Check className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600 dark:text-green-400" />
+                          <span className="text-sm text-slate-700 dark:text-muted-foreground">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Background Decoration */}
-      <div className="absolute top-1/4 right-0 w-72 h-72 bg-gradient-to-br from-blue-200/30 to-purple-200/30 dark:from-primary/10 dark:to-secondary/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-gradient-to-tr from-purple-200/20 to-blue-200/20 dark:from-secondary/8 dark:to-primary/8 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/4 right-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-gradient-to-br from-blue-300/25 to-purple-300/25 dark:from-primary/25 dark:to-secondary/25 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-gradient-to-tr from-purple-200/20 to-indigo-300/20 dark:from-secondary/20 dark:to-primary/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-96 sm:h-96 md:w-[500px] md:h-[500px] bg-gradient-to-r from-blue-200/15 to-purple-200/15 dark:from-primary/10 dark:to-secondary/10 rounded-full blur-3xl"></div>
     </section>
   );
 }

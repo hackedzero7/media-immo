@@ -26,7 +26,7 @@ export function Header() {
             href="/"
             className="text-xl font-bold text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent [&:not(:has(.bg-clip-text))]:text-foreground"
           >
-            MEDIA IMAG
+            MEDIA IMMO
           </Link>
         </div>
 
