@@ -143,16 +143,16 @@ export const useAuthStore = create<AuthStore>()(
               return { success: false, error: data.error }
             }
 
-            set(
-              {
-                user: data.user,
-                isAuthenticated: true,
-                isLoading: false,
-                error: null,
-              },
-              false,
-              "signup:success",
-            )
+            // set(
+            //   {
+            //     user: data.user,
+            //     isAuthenticated: true,
+            //     isLoading: false,
+            //     error: null,
+            //   },
+            //   false,
+            //   "signup:success",
+            // )
 
             return { success: true }
           } catch (error) {

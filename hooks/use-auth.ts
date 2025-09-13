@@ -13,6 +13,7 @@ export function useAuth() {
     isAuthenticated,
     setUser,
     setLoading,
+    setError,
     login,
     signup,
     logout: storeLogout,
@@ -44,14 +45,21 @@ export function useAuth() {
     }
   }, [session, status, setUser, setLoading])
 
+  // ✅ Login handler with proper loading state
   const handleLogin = async (email: string, password: string) => {
+    setLoading(true) // start loader
+    clearError()
+
     const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
     })
 
+    setLoading(false) // stop loader
+
     if (result?.error) {
+      setError("Invalid email or password")
       return { success: false, error: "Invalid email or password" }
     }
 
@@ -59,11 +67,13 @@ export function useAuth() {
   }
 
   const handleLogout = async () => {
+    setLoading(true)
     await signOut({ redirect: false })
     storeLogout()
+    setLoading(false)
   }
 
-  const isLoading = status === "loading" || storeLoading
+  const isLoading = storeLoading || status === "loading"
 
   return {
     user,

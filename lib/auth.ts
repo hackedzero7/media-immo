@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          throw new Error("Please enter your email and password")
         }
 
         try {
@@ -24,13 +24,13 @@ export const authOptions: NextAuthOptions = {
           const user = await User.findOne({ email: credentials.email })
 
           if (!user) {
-            return null
+            throw new Error("Invalid email or password")
           }
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
           if (!isPasswordValid) {
-            return null
+            throw new Error("Invalid email or password")
           }
 
           return {
@@ -42,7 +42,10 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error("Auth error:", error)
-          return null
+          if (error instanceof Error) {
+            throw error
+          }
+          throw new Error("Authentication failed. Please try again.")
         }
       },
     }),
@@ -73,4 +76,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     signUp: "/signup",
   },
+  debug: process.env.NODE_ENV === "development",
 }

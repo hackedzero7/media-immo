@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,6 +25,7 @@ export default function LoginPage() {
     if (result.success) {
       router.push("/") // Redirect to home page after successful login
     }
+    // else error store me set ho jaye ga aur UI show kare ga
   }
 
   return (
@@ -36,12 +36,15 @@ export default function LoginPage() {
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-black dark:text-transparent">
               Welcome Back
             </CardTitle>
-            <CardDescription className="text-muted-foreground">Sign in to your account to continue</CardDescription>
+            <CardDescription className="text-muted-foreground">
+              Sign in to your account to continue
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* 🔥 Error Box */}
               {error && (
-                <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+                <div className="p-3 text-sm text-destructive-foreground bg-destructive/50 border border-destructive/20 rounded-md">
                   {error}
                 </div>
               )}
@@ -87,9 +90,13 @@ export default function LoginPage() {
                     Remember me
                   </Label>
                 </div>
-                
               </div>
-              <Button type="submit" className="w-full text-foreground/90 hover:text-primary" size="lg" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full text-foreground/90 hover:text-primary"
+                size="lg"
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>

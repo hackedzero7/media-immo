@@ -293,7 +293,7 @@ export default function ProfilePage() {
                   <span className="text-sm font-medium">Status</span>
                   <Badge
                     variant={userData.subscription.status === "Active" ? "default" : "destructive"}
-                    className="flex-shrink-0 bg-black"
+                    className="flex-shrink-0 bg-black dark:bg-gradient-to-r from-primary to-secondary text-white"
                   >
                     {userData.subscription.status}
                   </Badge>

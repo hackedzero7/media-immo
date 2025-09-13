@@ -38,7 +38,7 @@ export default function SignupPage() {
     })
 
     if (result.success) {
-      router.push("/") // Redirect to home page after successful signup
+      router.push("/login") // Redirect to home page after successful signup
     }
   }
 

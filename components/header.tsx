@@ -67,14 +67,14 @@ export function Header() {
           <ThemeToggle />
           {isAuthenticated ? (
             <>
-              {user?.role === "admin" && (
+              {/* {user?.role === "admin" && (
                 <Link href="/admin">
                   <Button variant="ghost" size="sm" className="text-foreground/90 hover:text-primary">
                     <span className="hidden lg:inline">Admin</span>
                     <span className="lg:hidden">Admin</span>
                   </Button>
                 </Link>
-              )}
+              )} */}
             
               {user && (
                 <div className="relative">
@@ -96,6 +96,16 @@ export function Header() {
                           >
                             <User className="h-4 w-4 inline mr-2" />
                             Profile
+                          </Link>
+                        )}
+                        {user.role === "admin" && (
+                          <Link
+                            href="/admin"
+                            className="block px-4 py-2 text-sm text-foreground/90 hover:bg-muted transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            <User className="h-4 w-4 inline mr-2" />
+                            Admin Dashboard
                           </Link>
                         )}
                         <button
