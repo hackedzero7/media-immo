@@ -1,12 +1,12 @@
-"use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Crown, ChevronDown, ChevronUp } from "lucide-react";
+"use client"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Check, Crown } from "lucide-react"
 
 export function PricingSection() {
-  const [isAnnual, setIsAnnual] = useState(false);
-  const [expandedPlan, setExpandedPlan] = useState<number | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [expandedPlan, setExpandedPlan] = useState<number | null>(null)
 
   const plans = [
     {
@@ -27,10 +27,9 @@ export function PricingSection() {
     {
       name: "Independent",
       monthly: "€6.65",
-      annual: "€66", // Example with discount
+      annual: "€63.84", // Updated annual price calculation: €6.65 * 12 * 0.8 = €63.84 (20% discount)
       period: isAnnual ? "/year" : "/month",
-      description:
-        "For the ambitious agent who wants to stand out and reach new heights.",
+      description: "For the ambitious agent who wants to stand out and reach new heights.",
       features: [
         "Bonus for the 4th shooting: Virtual home staging, 5 drone photos or 2D plan (150m² max) of your choice",
         "Professional portrait shoot offered every semester to impress your customers",
@@ -47,10 +46,9 @@ export function PricingSection() {
     {
       name: "Agency",
       monthly: "€41.60",
-      annual: "€416", // Example with discount
+      annual: "€399.36", // Updated annual price calculation: €41.60 * 12 * 0.8 = €399.36 (20% discount)
       period: isAnnual ? "/year" : "/month",
-      description:
-        "For teams that want to dominate their market and scale quickly.",
+      description: "For teams that want to dominate their market and scale quickly.",
       features: [
         "1H shooting offered as a loyalty bonus",
         "Everything from the Independent package for each agent on your team",
@@ -63,11 +61,18 @@ export function PricingSection() {
       popular: false,
       isPremium: true,
     },
-  ];
+  ]
+
+  const getVisibleFeatures = (features: string[], planIndex: number) => {
+    if (expandedPlan === planIndex) {
+      return features
+    }
+    return features.slice(0, 3)
+  }
 
   const toggleFeatures = (planIndex: number) => {
-    setExpandedPlan(expandedPlan === planIndex ? null : planIndex);
-  };
+    setExpandedPlan(expandedPlan === planIndex ? null : planIndex)
+  }
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50/80 to-indigo-100 dark:from-background dark:via-background/95 dark:to-primary/5 py-16 sm:py-20 md:py-24 xl:py-32 flex flex-col items-center justify-center min-h-screen">
@@ -103,10 +108,7 @@ export function PricingSection() {
               }`}
               variant={isAnnual ? "default" : "outline"}
             >
-              Annual{" "}
-              <span className="ml-1 text-green-600 dark:text-green-400 font-semibold">
-                Save 15%
-              </span>
+              Annual <span className="ml-1 text-green-600 dark:text-green-400 font-semibold">Save 20%</span>
             </Button>
           </div>
         </div>
@@ -148,17 +150,13 @@ export function PricingSection() {
                   <CardTitle className="text-2xl font-bold text-slate-900 dark:text-foreground mb-4">
                     {plan.name}
                   </CardTitle>
-                  <p className="text-sm text-slate-700 dark:text-muted-foreground mb-6">
-                    {plan.description}
-                  </p>
+                  <p className="text-sm text-slate-700 dark:text-muted-foreground mb-6">{plan.description}</p>
 
                   <div className="mb-6">
                     <span className="text-4xl font-bold text-slate-900 dark:text-foreground">
                       {isAnnual ? plan.annual : plan.monthly}
                     </span>
-                    <span className="text-slate-700 dark:text-muted-foreground text-base ml-1">
-                      {plan.period}
-                    </span>
+                    <span className="text-slate-700 dark:text-muted-foreground text-base ml-1">{plan.period}</span>
                   </div>
 
                   <div
@@ -175,45 +173,36 @@ export function PricingSection() {
                 </CardHeader>
 
                 <CardContent className="px-6 pb-6">
-                  <button
-                    onClick={() => toggleFeatures(index)}
-                    className="flex items-center justify-between w-full text-sm font-medium 
-             text-slate-900 dark:text-foreground 
-             bg-gray-100 dark:bg-slate-800 
-             mb-4 px-3 py-2 
-             rounded-lg 
-             hover:text-blue-600 dark:hover:text-primary 
-             transition-colors sm:cursor-default 
-             sm:hover:text-slate-900 dark:sm:hover:text-foreground"
-                  >
-                    <span>Main features</span>
-                    <div className="sm:hidden">
-                      {expandedPlan === index ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
+                  <div className="relative">
+                    <div className="text-sm font-medium text-slate-900 dark:text-foreground bg-gray-100 dark:bg-slate-800 mb-4 px-3 py-2 rounded-lg">
+                      Main features
+                    </div>
+
+                    <div className="relative">
+                      <ul className="space-y-3">
+                        {getVisibleFeatures(plan.features, index).map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-start gap-3">
+                            <Check className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600 dark:text-green-400" />
+                            <span className="text-sm text-slate-700 dark:text-muted-foreground">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {expandedPlan !== index && plan.features.length > 3 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-card via-white/90 dark:via-card/90 to-transparent pointer-events-none" />
                       )}
                     </div>
-                  </button>
 
-                  <div
-                    className={`sm:block ${
-                      expandedPlan === index ? "block" : "hidden"
-                    }`}
-                  >
-                    <ul className="space-y-3 animate-in slide-in-from-top-2 duration-200 sm:animate-none">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li
-                          key={featureIndex}
-                          className="flex items-start gap-3"
+                    {expandedPlan !== index && plan.features.length > 3 && (
+                      <div className="flex justify-center mt-4">
+                        <button
+                          onClick={() => toggleFeatures(index)}
+                          className="bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border border-blue-400 dark:border-primary/50 backdrop-blur-sm px-4 py-2 rounded-lg font-medium text-sm shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-600/90 hover:to-purple-700/90 dark:hover:from-primary/50 dark:hover:to-secondary/50"
                         >
-                          <Check className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600 dark:text-green-400" />
-                          <span className="text-sm text-slate-700 dark:text-muted-foreground">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                          Explore features
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -226,5 +215,5 @@ export function PricingSection() {
       <div className="absolute bottom-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-gradient-to-tr from-purple-200/20 to-indigo-300/20 dark:from-secondary/20 dark:to-primary/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-96 sm:h-96 md:w-[500px] md:h-[500px] bg-gradient-to-r from-blue-200/15 to-purple-200/15 dark:from-primary/10 dark:to-secondary/10 rounded-full blur-3xl"></div>
     </section>
-  );
+  )
 }
