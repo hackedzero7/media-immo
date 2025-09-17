@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -28,83 +28,69 @@ import {
   Download,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [showCancelDialog, setShowCancelDialog] = useState<string | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState<object | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Mock users data - replace with actual data from your database
   const [users, setUsers] = useState([
     {
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      joinDate: "2024-01-15",
+      _id: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      createdAt: "",
       subscription: {
-        plan: "Independent",
-        price: "€6.65/month",
-        status: "Active",
-        nextBilling: "2024-02-15",
-      },
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      email: "sarah.j@example.com",
-      joinDate: "2024-01-20",
-      subscription: {
-        plan: "Agency",
-        price: "€19.95/month",
-        status: "Active",
-        nextBilling: "2024-02-20",
-      },
-    },
-    {
-      id: "3",
-      name: "Mike Wilson",
-      email: "mike.w@example.com",
-      joinDate: "2024-01-10",
-      subscription: {
-        plan: "Discovery",
-        price: "€2.95/month",
-        status: "Cancelled",
-        nextBilling: "2024-02-10",
-      },
-    },
-    {
-      id: "4",
-      name: "Emma Davis",
-      email: "emma.d@example.com",
-      joinDate: "2024-01-25",
-      subscription: {
-        plan: "Independent",
-        price: "€6.65/month",
-        status: "Active",
-        nextBilling: "2024-02-25",
-      },
-    },
-    {
-      id: "5",
-      name: "Alex Brown",
-      email: "alex.b@example.com",
-      joinDate: "2024-01-12",
-      subscription: {
-        plan: "Agency",
-        price: "€19.95/month",
-        status: "Active",
-        nextBilling: "2024-02-12",
+        subscriptionId: "",
+        status: "",
+        currentPeriodEnd: "",
+        priceId: "-",
+        priceAmount: 0.0,
+        priceCurrency: "-",
+        interval: "",
+        productId: "",
+        productName: "",
       },
     },
   ]);
 
-  const handleCancelSubscription = (userId: string) => {
+  const getUsers = async () => {
+    setLoading(true);
+    const response = await fetch("api/subscription");
+
+    const res = await response.json();
+    setUsers(res.result);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const handleCancelSubscription = async (userData: any) => {
+    const cancelSubscription = await fetch("/api/subscription", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        subscriptionId: userData?.subscription?.subscriptionId,
+      }),
+    });
+    if (!cancelSubscription.ok) {
+      toast.error("Failed to cancel subscription. Please try again later.");
+      return;
+    }
     setUsers((prev) =>
-      prev.map((user) =>
-        user.id === userId
+      prev?.map((user) =>
+        user._id === userData._id.toString()
           ? {
               ...user,
-              subscription: { ...user.subscription, status: "Cancelled" },
+              subscription: { ...user.subscription, status: "cancelled" },
             }
           : user
       )
@@ -114,34 +100,37 @@ export default function AdminPage() {
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFilter =
       filterStatus === "all" ||
-      user.subscription.status.toLowerCase() === filterStatus.toLowerCase();
+      user?.subscription?.status?.toLowerCase() === filterStatus?.toLowerCase();
 
     return matchesSearch && matchesFilter;
   });
 
   const stats = {
-    totalUsers: users.length,
-    activeSubscriptions: users.filter((u) => u.subscription.status === "Active")
-      .length,
-    cancelledSubscriptions: users.filter(
-      (u) => u.subscription.status === "Cancelled"
+    totalUsers: users?.length,
+    activeSubscriptions: users?.filter(
+      (u) => u?.subscription?.status === "active"
+    ).length,
+    cancelledSubscriptions: users?.filter(
+      (u) => u?.subscription?.status !== "active"
     ).length,
     totalRevenue: users
-      .filter((u) => u.subscription.status === "Active")
+      .filter((u) => u?.subscription?.status === "active")
       .reduce(
-        (sum, u) =>
-          sum +
-          Number.parseFloat(u.subscription.price.replace(/[€/month]/g, "")),
+        (sum, u) => sum + Number.parseFloat(u?.subscription?.priceAmount),
         0
       ),
+    // totalRevenue: 2000,
   };
 
-  return (
+  return loading ? (
+    <>Loading</>
+  ) : (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
@@ -295,7 +284,7 @@ export default function AdminPage() {
                         User
                       </TableHead>
                       <TableHead className="font-semibold text-foreground p-3 sm:p-4">
-                        Plan
+                        productName
                       </TableHead>
                       <TableHead className="font-semibold text-foreground p-3 sm:p-4">
                         Status
@@ -310,52 +299,56 @@ export default function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
-                      <TableRow key={user.id} className="hover:bg-primary/5">
+                      <TableRow key={user?._id} className="hover:bg-primary/5">
                         <TableCell className="p-3 sm:p-4">
                           <div className="space-y-1">
                             <p className="font-medium text-sm sm:text-base">
-                              {user.name}
+                              {user.firstName}
+                              {""} {user?.lastName}
                             </p>
                             <p className="text-xs sm:text-sm text-muted-foreground">
-                              {user.email}
+                              {user?.email}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           <div className="space-y-1">
                             <p className="font-medium text-sm sm:text-base">
-                              {user.subscription.plan}
+                              {user?.subscription?.productName}
                             </p>
                             <p className="text-xs sm:text-sm text-muted-foreground">
-                              {user.subscription.price}
+                              {parseFloat(
+                                user?.subscription?.priceAmount
+                              ).toFixed(2)}
+                              /{user?.subscription?.interval}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           <Badge
                             variant={
-                              user.subscription.status === "Active"
+                              user?.subscription?.status === "active"
                                 ? "default"
                                 : "destructive"
                             }
                             className="text-xs"
                           >
-                            {user.subscription.status}
+                            {user?.subscription?.status.toUpperCase()}
                           </Badge>
                         </TableCell>
                         <TableCell className="p-3 sm:p-4 hidden sm:table-cell">
                           <span className="text-sm text-muted-foreground">
                             {new Date(
-                              user.subscription.nextBilling
+                              user?.subscription?.currentPeriodEnd
                             ).toLocaleDateString()}
                           </span>
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          {user.subscription.status === "Active" && (
+                          {user?.subscription?.status === "active" && (
                             <Button
                               variant="destructive"
                               size="sm"
-                              onClick={() => setShowCancelDialog(user.id)}
+                              onClick={() => setShowCancelDialog(user)}
                               className="h-8 px-3 text-xs"
                             >
                               Cancel

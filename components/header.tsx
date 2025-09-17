@@ -1,22 +1,24 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Menu, X, LogOut, User, ChevronDown } from "lucide-react"
-import { useState } from "react"
-import { useAuth } from "@/hooks/use-auth"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const { user, isAuthenticated, logout } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const handleLogout = async () => {
-    await logout()
-    setIsMenuOpen(false)
-    setIsDropdownOpen(false)
-  }
+    await logout();
+    localStorage.clear();
+    window.location.href = "/login";
+    setIsMenuOpen(false);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/20 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90">
@@ -30,8 +32,16 @@ export function Header() {
           </Link>
         </div>
 
-        <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <button
+          className="md:hidden p-2"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
 
         <nav className="hidden md:flex items-center justify-center flex-grow mx-8">
@@ -75,14 +85,16 @@ export function Header() {
                   </Button>
                 </Link>
               )} */}
-            
+
               {user && (
                 <div className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center space-x-1 text-sm text-foreground/70 hover:text-primary transition-colors"
                   >
-                    <span className="hidden lg:inline">Hi, {user.firstName || user.email}</span>
+                    <span className="hidden lg:inline">
+                      Hi, {user.firstName || user.email}
+                    </span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
                   {isDropdownOpen && (
@@ -124,13 +136,20 @@ export function Header() {
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-foreground/90 hover:text-primary">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-foreground/90 hover:text-primary"
+                >
                   <span className="hidden lg:inline">Log In</span>
                   <span className="lg:hidden">Login</span>
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="text-xs lg:text-sm text-foreground/90 hover:text-primary">
+                <Button
+                  size="sm"
+                  className="text-xs lg:text-sm text-foreground/90 hover:text-primary"
+                >
                   Sign Up
                 </Button>
               </Link>
@@ -202,7 +221,11 @@ export function Header() {
                         </Button>
                       </Link>
                     )}
-                    {user && <div className="text-sm text-foreground/70 py-2">Hi, {user.firstName || user.email}</div>}
+                    {user && (
+                      <div className="text-sm text-foreground/70 py-2">
+                        Hi, {user.firstName || user.email}
+                      </div>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -226,7 +249,11 @@ export function Header() {
                       </Button>
                     </Link>
                     <Link href="/signup" className="block">
-                      <Button size="sm" className="w-full text-foreground/90 hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                      <Button
+                        size="sm"
+                        className="w-full text-foreground/90 hover:text-primary"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         Sign Up
                       </Button>
                     </Link>
@@ -238,5 +265,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }
