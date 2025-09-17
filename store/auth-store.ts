@@ -1,41 +1,48 @@
-import { create } from "zustand"
-import { devtools, persist } from "zustand/middleware"
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
 interface User {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  role: "user" | "admin"
-  createdAt: string
-  updatedAt: string
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: "user" | "admin";
+  stripeCustomerId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthState {
-  user: User | null
-  isLoading: boolean
-  error: string | null
-  isAuthenticated: boolean
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
 }
 
 interface AuthActions {
-  setUser: (user: User | null) => void
-  setLoading: (loading: boolean) => void
-  setError: (error: string | null) => void
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  signup: (userData: {
-    firstName: string
-    lastName: string
-    email: string
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  login: (
+    email: string,
     password: string
-    confirmPassword: string
-  }) => Promise<{ success: boolean; error?: string }>
-  logout: () => void
-  clearError: () => void
-  updateProfile: (userData: { firstName: string; lastName: string }) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<{ success: boolean; error?: string }>;
+  signup: (userData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => Promise<{ success: boolean; error?: string }>;
+  logout: () => void;
+  clearError: () => void;
+  updateProfile: (userData: {
+    firstName: string;
+    lastName: string;
+  }) => Promise<{ success: boolean; error?: string }>;
 }
 
-type AuthStore = AuthState & AuthActions
+type AuthStore = AuthState & AuthActions;
 
 export const useAuthStore = create<AuthStore>()(
   devtools(
@@ -56,7 +63,7 @@ export const useAuthStore = create<AuthStore>()(
               error: null,
             },
             false,
-            "setUser",
+            "setUser"
           ),
 
         setLoading: (loading) =>
@@ -65,7 +72,7 @@ export const useAuthStore = create<AuthStore>()(
               isLoading: loading,
             },
             false,
-            "setLoading",
+            "setLoading"
           ),
 
         setError: (error) =>
@@ -74,7 +81,7 @@ export const useAuthStore = create<AuthStore>()(
               error,
             },
             false,
-            "setError",
+            "setError"
           ),
 
         clearError: () =>
@@ -83,11 +90,11 @@ export const useAuthStore = create<AuthStore>()(
               error: null,
             },
             false,
-            "clearError",
+            "clearError"
           ),
 
         login: async (email, password) => {
-          set({ isLoading: true, error: null }, false, "login:start")
+          set({ isLoading: true, error: null }, false, "login:start");
 
           try {
             const response = await fetch("/api/auth/login", {
@@ -96,13 +103,17 @@ export const useAuthStore = create<AuthStore>()(
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ email, password }),
-            })
+            });
 
-            const data = await response.json()
+            const data = await response.json();
 
             if (!response.ok) {
-              set({ isLoading: false, error: data.error }, false, "login:error")
-              return { success: false, error: data.error }
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "login:error"
+              );
+              return { success: false, error: data.error };
             }
 
             set(
@@ -113,19 +124,23 @@ export const useAuthStore = create<AuthStore>()(
                 error: null,
               },
               false,
-              "login:success",
-            )
+              "login:success"
+            );
 
-            return { success: true }
+            return { success: true };
           } catch (error) {
-            const errorMessage = "Network error. Please try again."
-            set({ isLoading: false, error: errorMessage }, false, "login:network-error")
-            return { success: false, error: errorMessage }
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "login:network-error"
+            );
+            return { success: false, error: errorMessage };
           }
         },
 
         signup: async (userData) => {
-          set({ isLoading: true, error: null }, false, "signup:start")
+          set({ isLoading: true, error: null }, false, "signup:start");
 
           try {
             const response = await fetch("/api/auth/signup", {
@@ -134,13 +149,17 @@ export const useAuthStore = create<AuthStore>()(
                 "Content-Type": "application/json",
               },
               body: JSON.stringify(userData),
-            })
+            });
 
-            const data = await response.json()
+            const data = await response.json();
 
             if (!response.ok) {
-              set({ isLoading: false, error: data.error }, false, "signup:error")
-              return { success: false, error: data.error }
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "signup:error"
+              );
+              return { success: false, error: data.error };
             }
 
             // set(
@@ -154,16 +173,20 @@ export const useAuthStore = create<AuthStore>()(
             //   "signup:success",
             // )
 
-            return { success: true }
+            return { success: true };
           } catch (error) {
-            const errorMessage = "Network error. Please try again."
-            set({ isLoading: false, error: errorMessage }, false, "signup:network-error")
-            return { success: false, error: errorMessage }
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "signup:network-error"
+            );
+            return { success: false, error: errorMessage };
           }
         },
 
         updateProfile: async (userData) => {
-          set({ isLoading: true, error: null }, false, "updateProfile:start")
+          set({ isLoading: true, error: null }, false, "updateProfile:start");
 
           try {
             const response = await fetch("/api/user/profile", {
@@ -172,13 +195,17 @@ export const useAuthStore = create<AuthStore>()(
                 "Content-Type": "application/json",
               },
               body: JSON.stringify(userData),
-            })
+            });
 
-            const data = await response.json()
+            const data = await response.json();
 
             if (!response.ok) {
-              set({ isLoading: false, error: data.error }, false, "updateProfile:error")
-              return { success: false, error: data.error }
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "updateProfile:error"
+              );
+              return { success: false, error: data.error };
             }
 
             set(
@@ -188,14 +215,18 @@ export const useAuthStore = create<AuthStore>()(
                 error: null,
               },
               false,
-              "updateProfile:success",
-            )
+              "updateProfile:success"
+            );
 
-            return { success: true }
+            return { success: true };
           } catch (error) {
-            const errorMessage = "Network error. Please try again."
-            set({ isLoading: false, error: errorMessage }, false, "updateProfile:network-error")
-            return { success: false, error: errorMessage }
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "updateProfile:network-error"
+            );
+            return { success: false, error: errorMessage };
           }
         },
 
@@ -207,8 +238,8 @@ export const useAuthStore = create<AuthStore>()(
               error: null,
             },
             false,
-            "logout",
-          )
+            "logout"
+          );
         },
       }),
       {
@@ -217,16 +248,17 @@ export const useAuthStore = create<AuthStore>()(
           user: state.user,
           isAuthenticated: state.isAuthenticated,
         }),
-      },
+      }
     ),
     {
       name: "auth-store",
-    },
-  ),
-)
+    }
+  )
+);
 
 // Selectors for better performance
-export const useUser = () => useAuthStore((state) => state.user)
-export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated)
-export const useAuthLoading = () => useAuthStore((state) => state.isLoading)
-export const useAuthError = () => useAuthStore((state) => state.error)
+export const useUser = () => useAuthStore((state) => state.user);
+export const useIsAuthenticated = () =>
+  useAuthStore((state) => state.isAuthenticated);
+export const useAuthLoading = () => useAuthStore((state) => state.isLoading);
+export const useAuthError = () => useAuthStore((state) => state.error);

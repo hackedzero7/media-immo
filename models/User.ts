@@ -1,13 +1,13 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { type Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  role: "user" | "admin"
-  createdAt: Date
-  updatedAt: Date
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: "user" | "admin";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: Schema = new Schema(
@@ -24,13 +24,20 @@ const UserSchema: Schema = new Schema(
       trim: true,
       maxlength: [50, "Last name cannot be more than 50 characters"],
     },
+    stripeCustomerId: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Please enter a valid email"],
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Please enter a valid email",
+      ],
     },
     password: {
       type: String,
@@ -45,8 +52,9 @@ const UserSchema: Schema = new Schema(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
 // Prevent re-compilation during development
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema)
+export default mongoose.models.User ||
+  mongoose.model<IUser>("User", UserSchema);
