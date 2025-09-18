@@ -1,8 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import {dbConnect} from "@/lib/mongodb"
+import { dbConnect } from "@/lib/mongodb"
 import User from "@/models/User"
+
+// 👇 yeh line add karo
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {

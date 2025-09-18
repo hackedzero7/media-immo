@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Crown } from "lucide-react";
@@ -9,9 +9,18 @@ export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [expandedPlan, setExpandedPlan] = useState<number | null>(null);
 
-  const user = localStorage.getItem("auth-storage");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  const userEmail = user ? JSON.parse(user)?.state?.user?.email : null;
+  
+  useEffect(() => {
+    try {
+      const user = localStorage.getItem("auth-storage");
+      const email = user ? JSON.parse(user)?.state?.user?.email : null;
+      setUserEmail(email);
+    } catch (err) {
+      console.error("Failed to load user from localStorage", err);
+    }
+  }, []);
 
   const goToStripe = async (plan: any) => {
     if (!userEmail || userEmail === null) {
