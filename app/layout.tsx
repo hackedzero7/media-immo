@@ -12,7 +12,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "MEDIA IMMO",
-  description: "Real State Media Buissness",
+  description: "Real state media buissness",
   
 };
 
