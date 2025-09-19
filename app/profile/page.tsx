@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { plans } from "@/utils/plans";
 import { set } from "mongoose";
+import { ProfileSkeleton } from "@/components/ProfileSkeleton";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -200,12 +201,7 @@ export default function ProfilePage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Chargement du profil...</span>
-        </div>
-      </div>
+      <ProfileSkeleton/>
     );
   }
 

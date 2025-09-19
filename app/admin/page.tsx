@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,6 +71,77 @@ export default function AdminPage() {
   useEffect(() => {
     getUsers();
   }, []);
+
+  const DashboardSkeleton = () => (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-72" />
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="p-4 sm:p-6">
+              <Skeleton className="h-10 w-10 mb-3 rounded-full" />
+              <Skeleton className="h-6 w-20 mb-2" />
+              <Skeleton className="h-4 w-16" />
+            </Card>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <Card className="p-4 sm:p-6">
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-6 w-40" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <Skeleton className="h-10 w-full sm:w-64" />
+              <div className="flex gap-2">
+                <Skeleton className="h-10 w-20" />
+                <Skeleton className="h-10 w-20" />
+                <Skeleton className="h-10 w-24" />
+              </div>
+            </div>
+
+            {/* Table Skeleton */}
+            <div className="rounded-lg border border-primary/20 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[...Array(5)].map((_, i) => (
+                      <TableHead key={i}>
+                        <Skeleton className="h-4 w-20" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[1, 2, 3, 4].map((i) => (
+                    <TableRow key={i}>
+                      {[...Array(5)].map((_, j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-4 w-24" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 
   const handleCancelSubscription = async (userData: any) => {
     const cancelSubscription = await fetch("/api/subscription", {
@@ -129,7 +201,7 @@ export default function AdminPage() {
   };
 
   return loading ? (
-    <>Loading</>
+    <><DashboardSkeleton /></>
   ) : (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
