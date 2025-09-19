@@ -4,30 +4,31 @@ import { HelpCircle, MessageCircle, Shield, Zap } from "lucide-react"
 export function FaqSection() {
   const faqs = [
     {
-      question: "What is the difference between the Independent and Agency packages?",
+      question: "Quelle est la différence entre les forfaits Indépendant et Agence ?",
       answer:
-        "The Independent package is designed for individual agents with features like social media marketing kit and professional guidance. The Agency package includes everything from Independent plus team management tools, unlimited user accounts, and 24/7 priority support.",
+        "Le forfait Indépendant est conçu pour les agents individuels avec des fonctionnalités comme le kit marketing réseaux sociaux et l’accompagnement professionnel. Le forfait Agence inclut tout ce qu’offre l’Indépendant, plus des outils de gestion d’équipe, des comptes utilisateurs illimités et un support prioritaire 24/7.",
       icon: HelpCircle,
     },
     {
-      question: "Can I cancel at any time?",
+      question: "Puis-je annuler à tout moment ?",
       answer:
-        "Yes, you can cancel your subscription at any time. There are no long-term contracts or cancellation fees. Your access will continue until the end of your current billing period.",
+        "Oui, vous pouvez annuler votre abonnement à tout moment. Il n’y a pas de contrat à long terme ni de frais d’annulation. Votre accès restera actif jusqu’à la fin de votre période de facturation en cours.",
       icon: Shield,
     },
     {
-      question: "Is the Discovery offer really free?",
+      question: "L’offre Découverte est-elle vraiment gratuite ?",
       answer:
-        "The Discovery package is completely free and includes 5 minutes of phone calls, basic access, and professional guidance to help you get started with our platform.",
+        "Le forfait Découverte est entièrement gratuit et inclut 5 minutes d’appels téléphoniques, un accès basique et un accompagnement professionnel pour vous aider à démarrer sur notre plateforme.",
       icon: Zap,
     },
     {
-      question: "How does the 20% discount work?",
+      question: "Comment fonctionne la réduction de 20 % ?",
       answer:
-        "Independent and Agency subscribers receive a 20% discount on all additional services and premium features not included in their base package. This discount is automatically applied at checkout.",
+        "Les abonnés Indépendant et Agence bénéficient d’une réduction de 20 % sur tous les services supplémentaires et fonctionnalités premium non inclus dans leur forfait de base. Cette remise est appliquée automatiquement lors du paiement.",
       icon: MessageCircle,
     },
-  ]
+  ];
+  
 
   return (
     <section className="py-24 relative overflow-hidden">
@@ -39,16 +40,16 @@ export function FaqSection() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6">
             <MessageCircle className="w-4 h-4" />
-            Frequently Asked Questions
+            Foire aux questions
           </div>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-            Got{" "}
+          Vous avez{" "}
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Questions?
+            des questions ?
             </span>
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Find answers to the most common questions about our platform and services
+          Trouvez des réponses aux questions les plus fréquentes sur notre plateforme et nos services.
           </p>
         </div>
 

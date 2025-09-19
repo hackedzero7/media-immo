@@ -69,66 +69,7 @@ export function PricingSection() {
     }
   };
 
-  // const plans = [
-  //   {
-  //     name: "Discovery",
-  //     monthly: "0€",
-  //     annual: "0€",
-  //     period: "",
-  //     description: "Test our quality on your first property, it's free.",
-  //     features: [
-  //       "1 free photo shoot for 1 property (10-15 photos)",
-  //       "Dedicated mini-website for this property",
-  //       "Access our guide to ads that convert",
-  //     ],
-  //     cta: "Try it risk-free",
-  //     popular: false,
-  //     isPremium: false,
-  //   },
-  //   {
-  //     name: "Independent",
-  //     monthly: "€6.65",
-  //     annual: "€63.84", // Updated annual price calculation: €6.65 * 12 * 0.8 = €63.84 (20% discount)
-  //     period: isAnnual ? "/year" : "/month",
-  //     monthlyStripePriceId: "price_1S7lHh1mkOUsOofRSgAvN8Nr",
-  //     yearlyStripePriceId: "price_1S7lHh1mkOUsOofRTIiyGx3q",
-  //     description:
-  //       "For the ambitious agent who wants to stand out and reach new heights.",
-  //     features: [
-  //       "Bonus for the 4th shooting: Virtual home staging, 5 drone photos or 2D plan (150m² max) of your choice",
-  //       "Professional portrait shoot offered every semester to impress your customers",
-  //       "20% discount on all additional services (drone, video, etc.)",
-  //       "Social media marketing kit delivered with each shoot",
-  //       "Unlimited mini websites that impress your customers",
-  //       "24-hour express delivery to beat your competitors",
-  //       "Dedicated personal advisor to guide you towards success",
-  //     ],
-  //     cta: "Subscribe",
-  //     popular: true,
-  //     isPremium: true,
-  //   },
-  //   {
-  //     name: "Agency",
-  //     monthly: "€41.60",
-  //     annual: "€399.36", // Updated annual price calculation: €41.60 * 12 * 0.8 = €399.36 (20% discount)
-  //     period: isAnnual ? "/year" : "/month",
-  //     monthlyStripePriceId: "price_1S7lJF1mkOUsOofRtiTOWrDN",
-  //     yearlyStripePriceId: "price_1S7lJF1mkOUsOofR5HRHEOK4",
-  //     description:
-  //       "For teams that want to dominate their market and scale quickly.",
-  //     features: [
-  //       "1H shooting offered as a loyalty bonus",
-  //       "Everything from the Independent package for each agent on your team",
-  //       "Team portal shared for a unified image",
-  //       "Multi-user accounts with centralized billing",
-  //       "24/7 priority support for maximum responsiveness",
-  //       "Exclusive webinars to train and motivate your team",
-  //     ],
-  //     cta: "Contact an expert",
-  //     popular: false,
-  //     isPremium: true,
-  //   },
-  // ];
+  
 
   const getVisibleFeatures = (features: string[], planIndex: number) => {
     if (expandedPlan === planIndex) {
@@ -147,10 +88,10 @@ export function PricingSection() {
         {/* Heading */}
         <div className="text-center mb-12 sm:mb-16 xl:mb-24 w-full flex flex-col items-center">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl xl:text-7xl text-balance mb-4 xl:mb-6 px-4 sm:px-0 text-center text-slate-900 dark:text-foreground">
-            The game-changing formula for your career
+          La formule révolutionnaire pour votre carrière
           </h2>
           <p className="text-slate-700 dark:text-muted-foreground text-lg sm:text-xl xl:text-2xl max-w-2xl xl:max-w-4xl mx-auto px-4 sm:px-0 text-center">
-            A premium membership for a premium lifestyle, for professionals.
+          Une adhésion premium pour un style de vie premium, destinée aux professionnels.
           </p>
 
           <div className="flex items-center gap-4 mt-6">
@@ -163,7 +104,7 @@ export function PricingSection() {
               }`}
               variant={!isAnnual ? "default" : "outline"}
             >
-              Monthly
+            Mensuel
             </Button>
 
             <Button
@@ -175,9 +116,9 @@ export function PricingSection() {
               }`}
               variant={isAnnual ? "default" : "outline"}
             >
-              Annual{" "}
+              Annuel{" "}
               <span className="ml-1 text-green-600 dark:text-green-400 font-semibold">
-                Save 20%
+              Économisez 20 %
               </span>
             </Button>
           </div>
@@ -186,7 +127,7 @@ export function PricingSection() {
         <div className="w-full max-w-sm sm:max-w-6xl mx-auto relative">
           <div className="flex justify-center mb-6 sm:mb-0 sm:absolute sm:-top-4 sm:left-1/2 sm:-translate-x-1/2 sm:z-20">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-primary dark:to-secondary text-white px-6 py-2 text-sm font-medium rounded-full shadow-lg">
-              By popularity
+            Par popularité
             </div>
           </div>
 
@@ -250,7 +191,7 @@ export function PricingSection() {
                 <CardContent className="px-6 pb-6">
                   <div className="relative">
                     <div className="text-sm font-medium text-slate-900 dark:text-foreground bg-gray-100 dark:bg-slate-800 mb-4 px-3 py-2 rounded-lg">
-                      Main features
+                      Principales fonctionnalités
                     </div>
 
                     <div className="relative">
@@ -281,7 +222,7 @@ export function PricingSection() {
                           onClick={() => toggleFeatures(index)}
                           className="bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border border-blue-400 dark:border-primary/50 backdrop-blur-sm px-4 py-2 rounded-lg font-medium text-sm shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-600/90 hover:to-purple-700/90 dark:hover:from-primary/50 dark:hover:to-secondary/50"
                         >
-                          Explore features
+                        Explorer les fonctionnalités
                         </button>
                       </div>
                     )}

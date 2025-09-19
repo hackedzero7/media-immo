@@ -9,10 +9,10 @@ export function Footer() {
         <div className="grid gap-6 sm:gap-8 md:gap-8 lg:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-7xl place-items-center sm:place-items-start">
           <div className="space-y-3 md:space-y-4 text-center sm:text-left sm:col-span-2 lg:col-span-1">
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white bg-gradient-to-r from-primary-foreground to-secondary-foreground bg-clip-text text-transparent">
-              MEDIA IMAG
+            MEDIA IMMO
             </div>
             <p className="text-gray-300 text-sm sm:text-base lg:text-lg max-w-xs mx-auto sm:mx-0">
-              The all-in-one solution for real estate professionals.
+              La solution tout-en-un pour les professionnels de l'immobilier.
             </p>
           </div>
 
@@ -24,7 +24,7 @@ export function Footer() {
                   href="#features"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Our Offers
+                  Nos offres
                 </a>
               </li>
               <li>
@@ -32,7 +32,7 @@ export function Footer() {
                   href="#benefits"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Benefits
+                  Avantages
                 </a>
               </li>
               <li>
@@ -40,7 +40,7 @@ export function Footer() {
                   href="#testimonials"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Testimonials
+                  Témoignages
                 </a>
               </li>
               <li>
@@ -55,14 +55,14 @@ export function Footer() {
           </div>
 
           <div className="space-y-3 md:space-y-4 text-center sm:text-left">
-            <h3 className="font-semibold text-white text-base sm:text-lg">Legal</h3>
+            <h3 className="font-semibold text-white text-base sm:text-lg">Mentions légales</h3>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base">
               <li>
                 <a
                   href="#"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Terms of Service
+                  Conditions d'utilisation
                 </a>
               </li>
               <li>
@@ -70,7 +70,7 @@ export function Footer() {
                   href="#"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Privacy Policy
+                  Politique de confidentialité
                 </a>
               </li>
               <li>
@@ -78,7 +78,7 @@ export function Footer() {
                   href="#"
                   className="text-gray-300 hover:text-white transition-colors duration-300 inline-block py-1 px-2 sm:px-0 rounded hover:bg-white/10 sm:hover:bg-transparent"
                 >
-                  Cookie Policy
+                  Politique relative aux cookies
                 </a>
               </li>
             </ul>
@@ -108,7 +108,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/20 mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-400 w-full max-w-7xl">
-          <p className="px-4">© 2024 MEDIA IMAG. All rights reserved.</p>
+          <p className="px-4">© 2024 MEDIA IMAG. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

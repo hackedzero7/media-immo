@@ -26,7 +26,7 @@ export default function SignupPage() {
     clearError()
 
     if (!acceptTerms) {
-      return // Terms must be accepted
+      return // Les conditions doivent être acceptées
     }
 
     const result = await signup({
@@ -38,7 +38,7 @@ export default function SignupPage() {
     })
 
     if (result.success) {
-      router.push("/login") // Redirect to home page after successful signup
+      router.push("/login") // Redirection vers la page de connexion après inscription réussie
     }
   }
 
@@ -48,9 +48,11 @@ export default function SignupPage() {
         <Card className="backdrop-blur-xl bg-card/80 border-2 border-primary/20 shadow-2xl">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-black dark:text-transparent">
-              Create Account
+              Créer un compte
             </CardTitle>
-            <CardDescription className="text-muted-foreground">Join us and start your journey today</CardDescription>
+            <CardDescription className="text-muted-foreground">
+              Rejoignez-nous et commencez votre aventure dès aujourd'hui
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,12 +65,12 @@ export default function SignupPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-medium">
-                    First Name
+                    Prénom
                   </Label>
                   <Input
                     id="firstName"
                     type="text"
-                    placeholder="John"
+                    placeholder="Jean"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
@@ -77,12 +79,12 @@ export default function SignupPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-sm font-medium">
-                    Last Name
+                    Nom
                   </Label>
                   <Input
                     id="lastName"
                     type="text"
-                    placeholder="Doe"
+                    placeholder="Dupont"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
@@ -97,7 +99,7 @@ export default function SignupPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="Entrez votre email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -106,12 +108,12 @@ export default function SignupPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">
-                  Password
+                  Mot de passe
                 </Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Create a password"
+                  placeholder="Créez un mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -120,12 +122,12 @@ export default function SignupPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                  Confirm Password
+                  Confirmer le mot de passe
                 </Label>
                 <Input
                   id="confirmPassword"
                   type="password"
-                  placeholder="Confirm your password"
+                  placeholder="Confirmez votre mot de passe"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
@@ -142,24 +144,24 @@ export default function SignupPage() {
                   className="w-4 h-4 text-primary bg-transparent border-2 border-primary/30 rounded focus:ring-primary/50"
                 />
                 <Label htmlFor="terms" className="text-sm text-muted-foreground">
-                  I agree to the{" "}
+                  J'accepte les{" "}
                   <Link href="#" className="text-primary hover:text-primary/80 transition-colors">
-                    Terms of Service
+                    Conditions d'utilisation
                   </Link>{" "}
-                  and{" "}
+                  et la{" "}
                   <Link href="#" className="text-primary hover:text-primary/80 transition-colors">
-                    Privacy Policy 
+                    Politique de confidentialité
                   </Link>
                 </Label>
               </div>
               <Button type="submit" className="w-full text-foreground/90 hover:text-primary" size="lg" disabled={isLoading || !acceptTerms}>
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "Création du compte..." : "Créer un compte"}
               </Button>
             </form>
             <div className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+              Vous avez déjà un compte ?{" "}
               <Link href="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                Sign in
+                Se connecter
               </Link>
             </div>
           </CardContent>

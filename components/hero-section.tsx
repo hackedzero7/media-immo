@@ -21,30 +21,30 @@ export function HeroSection() {
           <div className="space-y-4 md:space-y-6">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 backdrop-blur-sm">
               <span className="text-sm font-medium text-white dark:text-white bg-primary dark:bg-primary px-2 py-1 rounded-full">
-                🚀 Revolutionary Sales Platform
+                🚀 Plateforme de Vente Révolutionnaire
               </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight text-balance">
               <span className="block text-foreground dark:text-foreground">
-                Stop losing
+                Arrêtez de perdre
               </span>
               <span className="block text-foreground dark:text-foreground font-black drop-shadow-2xl">
-                MANDATES
+                MANDATS
               </span>
               <span className="block text-foreground/80 dark:text-foreground/70 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light mt-2">
-                Sell faster, for more.
+                Vendez plus vite, à un meilleur prix.
               </span>
             </h1>
           </div>
 
           <div className="max-w-3xl space-y-4">
             <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-foreground/80 leading-relaxed text-pretty">
-              The all-in-one solution that gives you listings that buyers
-              negotiate and makes you sell at
+              La solution tout-en-un qui vous donne des annonces que les acheteurs
+              négocient et qui vous permet de vendre à
               <span className="text-primary dark:text-primary font-semibold">
                 {" "}
-                higher prices
+                des prix plus élevés
               </span>
               .
             </p>
@@ -52,15 +52,15 @@ export function HeroSection() {
             <div className="flex flex-wrap justify-center gap-6 text-sm text-foreground/70 dark:text-foreground/70">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full"></div>
-                <span>AI-Powered Listings</span>
+                <span>Annonces propulsées par IA</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
-                <span>Smart Negotiations</span>
+                <span>Négociations intelligentes</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
-                <span>Higher Conversions</span>
+                <span>Taux de conversion plus élevés</span>
               </div>
             </div>
           </div>
@@ -73,12 +73,12 @@ export function HeroSection() {
              hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 
              transform hover:scale-105 shadow-2xl"
             >
-              <span className="relative z-10">Start Your Free Trial</span>
+              <span className="relative z-10">Commencez votre essai gratuit</span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 dark:from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </Button>
 
             <button className="text-foreground/80 dark:text-foreground/80 hover:text-foreground dark:hover:text-foreground transition-colors duration-200 text-lg underline underline-offset-4">
-              Watch Demo
+              Regarder la démo
             </button>
           </div>
         </div>

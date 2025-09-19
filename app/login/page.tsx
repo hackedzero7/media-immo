@@ -23,9 +23,9 @@ export default function LoginPage() {
 
     const result = await login(email, password)
     if (result.success) {
-      router.push("/") // Redirect to home page after successful login
+      router.push("/") // Rediriger vers la page d'accueil après connexion réussie
     }
-    // else error store me set ho jaye ga aur UI show kare ga
+    // sinon l'erreur sera stockée et affichée dans l'UI
   }
 
   return (
@@ -34,15 +34,15 @@ export default function LoginPage() {
         <Card className="backdrop-blur-xl bg-card/80 border-2 border-primary/20 shadow-2xl">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-black dark:text-transparent">
-              Welcome Back
+              Bon Retour
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              Sign in to your account to continue
+              Connectez-vous à votre compte pour continuer
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 🔥 Error Box */}
+              {/* 🔥 Boîte d'erreur */}
               {error && (
                 <div className="p-3 text-sm text-destructive-foreground bg-destructive/50 border border-destructive/20 rounded-md">
                   {error}
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="Entrez votre email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -65,12 +65,12 @@ export default function LoginPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">
-                  Password
+                  Mot de passe
                 </Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Entrez votre mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -87,7 +87,7 @@ export default function LoginPage() {
                     className="w-4 h-4 text-primary bg-transparent border-2 border-primary/30 rounded focus:ring-primary/50"
                   />
                   <Label htmlFor="remember" className="text-sm text-muted-foreground">
-                    Remember me
+                    Se souvenir de moi
                   </Label>
                 </div>
               </div>
@@ -97,13 +97,13 @@ export default function LoginPage() {
                 size="lg"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing In..." : "Sign In"}
+                {isLoading ? "Connexion en cours..." : "Se connecter"}
               </Button>
             </form>
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Vous n’avez pas de compte ?{" "}
               <Link href="/signup" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                Sign up
+                Inscrivez-vous
               </Link>
             </div>
           </CardContent>

@@ -14,17 +14,17 @@ export function CtaSection() {
       <div className="container px-4 text-center relative z-10 flex items-center justify-center">
         <div className="max-w-3xl mx-auto space-y-8 flex flex-col items-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl text-slate-900 dark:text-foreground text-balance drop-shadow-lg">
-            Ready to become the go-to agent in your industry?
+            Prêt à devenir l’agent de référence dans votre secteur ?
           </h2>
           <p className="text-lg text-slate-700 dark:text-foreground/80 text-pretty max-w-2xl mx-auto">
-            Don't let your competitors take the best sales anymore. It's time to grow yourself. It's time to win.
+          Ne laissez plus vos concurrents réaliser les meilleures ventes. Il est temps de vous développer. Il est temps de gagner.
           </p>
           <Button
             size="lg"
             variant="outline"
             className="px-12 text-xl bg-transparent border-2 border-blue-600 dark:border-primary text-blue-600 dark:text-primary hover:bg-blue-600 hover:text-white dark:hover:bg-primary dark:hover:text-primary-foreground shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
           >
-            Choose the Winning Formula
+            Choisissez la formule gagnante
           </Button>
         </div>
       </div>

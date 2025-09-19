@@ -73,15 +73,15 @@ export function TestimonialsSection() {
         <div className="mb-12 md:mb-16 xl:mb-24 w-full">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-6">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-white/80">Client Success Stories</span>
+            <span className="text-sm font-medium text-white/80">Histoires de réussite clients</span>
           </div>
 
           <h2 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight text-balance mb-6">
-            <span className="block text-white">REAL</span>
-            <span className="block text-blue-400">RESULTS</span>
+            <span className="block text-white">RÉELS</span>
+            <span className="block text-blue-400">RÉSULTATS</span>
           </h2>
           <p className="text-white/60 text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed">
-            Authentic testimonials from clients who transformed their business with our platform
+          Témoignages authentiques de clients qui ont transformé leur entreprise grâce à notre plateforme.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export function TestimonialsSection() {
                 onEnded={() => setIsPlaying(false)}
               >
                 <source src={testimonials[currentSlide].videoUrl} type="video/mp4" />
-                <span className="text-white">Your browser does not support the video tag.</span>
+                <span className="text-white">Votre navigateur ne prend pas en charge la balise vidéo.</span>
               </video>
 
               {/* Play/Pause overlay button */}

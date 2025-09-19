@@ -6,21 +6,21 @@ export function BenefitsSection() {
   const benefits = [
     {
       icon: Target,
-      title: "Unbeatable Brand Image",
+      title: "Image de Marque Imbattable",
       description:
-        "Trigger the crush even before the visit with professional visuals that justify a higher selling price.",
+        "Déclenchez le coup de cœur avant même la visite grâce à des visuels professionnels qui justifient un prix de vente plus élevé.",
     },
     {
       icon: Clock,
-      title: "Free Time, Maximized Sales",
+      title: "Temps Libre, Ventes Maximisées",
       description:
-        "Stop juggling. We manage your entire media production within 24 hours so you can focus on negotiating.",
+        "Arrêtez de jongler. Nous gérons toute votre production média en 24 heures pour que vous puissiez vous concentrer sur la négociation.",
     },
     {
       icon: Zap,
-      title: "Marketing on Autopilot",
+      title: "Marketing en Pilote Automatique",
       description:
-        "Dominate social media and portals effortlessly with our mini-sites and marketing kits delivered with every shoot.",
+        "Dominez les réseaux sociaux et les portails sans effort grâce à nos mini-sites et kits marketing livrés avec chaque shooting.",
     },
   ]
 
@@ -32,21 +32,21 @@ export function BenefitsSection() {
             variant="secondary"
             className="mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-blue-500/90 to-purple-600/90 dark:from-primary/40 dark:to-secondary/40 text-white dark:text-foreground border-blue-400 dark:border-primary/50 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base md:text-lg shadow-lg"
           >
-            Benefits
+            Avantages
           </Badge>
 
           <div className="relative">
             <div className="flex flex-col items-center space-y-2 sm:space-y-4">
               <div className="relative">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-wide text-slate-800 dark:text-muted-foreground/90 text-balance">
-                  Take back control of your
+                  Reprenez le contrôle de vos
                 </h2>
                 <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/30 via-purple-500/20 to-indigo-400/30 dark:from-primary/30 dark:to-secondary/30 blur-xl opacity-60"></div>
               </div>
 
               <div className="relative group">
                 <h1 className="relative text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter text-slate-900 dark:text-foreground animate-pulse">
-                  SALES
+                  VENTES
                 </h1>
               </div>
 

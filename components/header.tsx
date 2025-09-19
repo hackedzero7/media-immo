@@ -35,7 +35,7 @@ export function Header() {
         <button
           className="md:hidden p-2"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
+          aria-label="Basculer le menu"
         >
           {isMenuOpen ? (
             <X className="h-6 w-6" />
@@ -50,19 +50,19 @@ export function Header() {
               href="#features"
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
-              Our Offers
+              Nos Offres
             </a>
             <a
               href="#benefits"
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
-              Benefits
+              Avantages
             </a>
             <a
               href="#testimonials"
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
-              Testimonials
+              Témoignages
             </a>
             <a
               href="#faq"
@@ -77,15 +77,6 @@ export function Header() {
           <ThemeToggle />
           {isAuthenticated ? (
             <>
-              {/* {user?.role === "admin" && (
-                <Link href="/admin">
-                  <Button variant="ghost" size="sm" className="text-foreground/90 hover:text-primary">
-                    <span className="hidden lg:inline">Admin</span>
-                    <span className="lg:hidden">Admin</span>
-                  </Button>
-                </Link>
-              )} */}
-
               {user && (
                 <div className="relative">
                   <button
@@ -93,7 +84,7 @@ export function Header() {
                     className="flex items-center space-x-1 text-sm text-foreground/70 hover:text-primary transition-colors"
                   >
                     <span className="hidden lg:inline">
-                      Hi, {user.firstName || user.email}
+                      Bonjour, {user.firstName || user.email}
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
@@ -107,7 +98,7 @@ export function Header() {
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             <User className="h-4 w-4 inline mr-2" />
-                            Profile
+                            Profil
                           </Link>
                         )}
                         {user.role === "admin" && (
@@ -117,7 +108,7 @@ export function Header() {
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             <User className="h-4 w-4 inline mr-2" />
-                            Admin Dashboard
+                            Tableau de Bord Admin
                           </Link>
                         )}
                         <button
@@ -125,7 +116,7 @@ export function Header() {
                           className="w-full text-left px-4 py-2 text-sm text-foreground/90 hover:bg-muted transition-colors"
                         >
                           <LogOut className="h-4 w-4 inline mr-2" />
-                          Logout
+                          Déconnexion
                         </button>
                       </div>
                     </div>
@@ -141,8 +132,8 @@ export function Header() {
                   size="sm"
                   className="text-foreground/90 hover:text-primary"
                 >
-                  <span className="hidden lg:inline">Log In</span>
-                  <span className="lg:hidden">Login</span>
+                  <span className="hidden lg:inline">Se Connecter</span>
+                  <span className="lg:hidden">Connexion</span>
                 </Button>
               </Link>
               <Link href="/signup">
@@ -150,7 +141,7 @@ export function Header() {
                   size="sm"
                   className="text-xs lg:text-sm text-foreground/90 hover:text-primary"
                 >
-                  Sign Up
+                  S'inscrire
                 </Button>
               </Link>
             </>
@@ -167,21 +158,21 @@ export function Header() {
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Our Offers
+                Nos Offres
               </a>
               <a
                 href="#benefits"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Benefits
+                Avantages
               </a>
               <a
                 href="#testimonials"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Testimonials
+                Témoignages
               </a>
               <a
                 href="#faq"
@@ -204,7 +195,7 @@ export function Header() {
                           className="w-full justify-center text-foreground/90 hover:text-primary"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          Admin Dashboard
+                          Tableau de Bord Admin
                         </Button>
                       </Link>
                     )}
@@ -217,13 +208,13 @@ export function Header() {
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <User className="h-4 w-4 mr-2" />
-                          Profile
+                          Profil
                         </Button>
                       </Link>
                     )}
                     {user && (
                       <div className="text-sm text-foreground/70 py-2">
-                        Hi, {user.firstName || user.email}
+                        Bonjour, {user.firstName || user.email}
                       </div>
                     )}
                     <Button
@@ -233,7 +224,7 @@ export function Header() {
                       onClick={handleLogout}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Logout
+                      Déconnexion
                     </Button>
                   </>
                 ) : (
@@ -245,7 +236,7 @@ export function Header() {
                         className="w-full justify-center text-foreground/90 hover:text-primary"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Log In
+                        Se Connecter
                       </Button>
                     </Link>
                     <Link href="/signup" className="block">
@@ -254,7 +245,7 @@ export function Header() {
                         className="w-full text-foreground/90 hover:text-primary"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Sign Up
+                        S'inscrire
                       </Button>
                     </Link>
                   </>
