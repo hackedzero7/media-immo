@@ -167,10 +167,10 @@ export function PricingSection() {
 
                   <div className="mb-6">
                     <span className="text-4xl font-bold text-slate-900 dark:text-foreground">
-                      {isAnnual ? plan.annual : plan.monthly}
+                      {isAnnual ? plan.fakeamount : plan.monthly} 
                     </span>
                     <span className="text-slate-700 dark:text-muted-foreground text-base ml-1">
-                      {plan.period}
+                      {/* {plan.period} */} /mois
                     </span>
                   </div>
 
@@ -184,7 +184,11 @@ export function PricingSection() {
                   >
                     {plan.cta}
                   </div>
-
+                    <div className="mb-6">
+                    <span className="text-sm font-bold text-slate-900 dark:text-foreground">
+                      {isAnnual ? `Facturé ${plan.monthly} annuellement` : "Sans engagement, résiliable en 1 clic"}
+                    </span>
+                    </div>
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-blue-200/40 to-purple-200/40 dark:from-primary/20 dark:to-secondary/20 rounded-full blur-2xl group-hover:from-blue-400/50 group-hover:to-purple-400/50 dark:group-hover:from-primary/30 dark:group-hover:to-secondary/30 transition-all duration-700"></div>
                 </CardHeader>
 

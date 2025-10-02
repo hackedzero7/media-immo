@@ -1,24 +1,48 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { useState, useCallback, type MouseEvent } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Menu, X, LogOut, User, ChevronDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/use-auth"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
+  const pathname = usePathname()
+
+  const closeMenus = () => {
+    setIsMenuOpen(false)
+    setIsDropdownOpen(false)
+  }
+
+  // Smoothly scroll when already on "/", otherwise allow navigation to "/#id"
+  const handleSectionClick = useCallback(
+    (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+      if (pathname === "/") {
+        e.preventDefault()
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+        closeMenus()
+      } else {
+        // Not on home — let Link navigate to "/#id". Smooth behavior is enabled globally.
+        closeMenus()
+      }
+    },
+    [pathname],
+  )
 
   const handleLogout = async () => {
-    await logout();
-    localStorage.clear();
-    window.location.href = "/login";
-    setIsMenuOpen(false);
-    setIsDropdownOpen(false);
-  };
+    await logout()
+    localStorage.clear()
+    window.location.href = "/login"
+    closeMenus()
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/20 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90">
@@ -32,44 +56,40 @@ export function Header() {
           </Link>
         </div>
 
-        <button
-          className="md:hidden p-2"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Basculer le menu"
-        >
-          {isMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+        <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Basculer le menu">
+          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
 
         <nav className="hidden md:flex items-center justify-center flex-grow mx-8">
           <div className="flex items-center space-x-6 lg:space-x-8">
-            <a
-              href="#features"
+            <Link
+              href="/#pricing"
+              onClick={handleSectionClick("pricing")}
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
               Nos Offres
-            </a>
-            <a
-              href="#benefits"
+            </Link>
+            <Link
+              href="/#benefits"
+              onClick={handleSectionClick("benefits")}
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
               Avantages
-            </a>
-            <a
-              href="#testimonials"
+            </Link>
+            <Link
+              href="/#testimonials"
+              onClick={handleSectionClick("testimonials")}
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
               Témoignages
-            </a>
-            <a
-              href="#faq"
+            </Link>
+            <Link
+              href="/#faq"
+              onClick={handleSectionClick("faq")}
               className="text-sm font-medium text-foreground/90 hover:text-primary transition-colors whitespace-nowrap"
             >
               FAQ
-            </a>
+            </Link>
           </div>
         </nav>
 
@@ -83,9 +103,7 @@ export function Header() {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center space-x-1 text-sm text-foreground/70 hover:text-primary transition-colors"
                   >
-                    <span className="hidden lg:inline">
-                      Bonjour, {user.firstName || user.email}
-                    </span>
+                    <span className="hidden lg:inline">Bonjour, {user.firstName || user.email}</span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
                   {isDropdownOpen && (
@@ -127,20 +145,13 @@ export function Header() {
           ) : (
             <>
               <Link href="/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-foreground/90 hover:text-primary"
-                >
+                <Button variant="ghost" size="sm" className="text-foreground/90 hover:text-primary">
                   <span className="hidden lg:inline">Se Connecter</span>
                   <span className="lg:hidden">Connexion</span>
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button
-                  size="sm"
-                  className="text-xs lg:text-sm text-foreground/90 hover:text-primary"
-                >
+                <Button size="sm" className="text-xs lg:text-sm text-foreground/90 hover:text-primary">
                   S'inscrire
                 </Button>
               </Link>
@@ -153,34 +164,35 @@ export function Header() {
         <div className="md:hidden border-t border-border/20 bg-background/95 backdrop-blur-xl">
           <nav className="container px-4 py-6 mx-auto max-w-7xl">
             <div className="flex flex-col items-center space-y-4 text-center">
-              <a
-                href="#features"
+              <Link
+                href="/#pricing"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleSectionClick("pricing")}
               >
                 Nos Offres
-              </a>
-              <a
-                href="#benefits"
+              </Link>
+              <Link
+                href="/#benefits"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleSectionClick("benefits")}
               >
                 Avantages
-              </a>
-              <a
-                href="#testimonials"
+              </Link>
+              <Link
+                href="/#testimonials"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleSectionClick("testimonials")}
               >
                 Témoignages
-              </a>
-              <a
-                href="#faq"
+              </Link>
+              <Link
+                href="/#faq"
                 className="block py-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleSectionClick("faq")}
               >
                 FAQ
-              </a>
+              </Link>
+
               <div className="pt-4 border-t border-border/20 w-full max-w-xs space-y-3">
                 <div className="flex justify-center">
                   <ThemeToggle />
@@ -188,24 +200,22 @@ export function Header() {
                 {isAuthenticated ? (
                   <>
                     {user?.role === "admin" && (
-                      <Link href="/admin" className="block">
+                      <Link href="/admin" className="block" onClick={closeMenus}>
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full justify-center text-foreground/90 hover:text-primary"
-                          onClick={() => setIsMenuOpen(false)}
                         >
                           Tableau de Bord Admin
                         </Button>
                       </Link>
                     )}
                     {user?.role === "user" && (
-                      <Link href="/profile" className="block">
+                      <Link href="/profile" className="block" onClick={closeMenus}>
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full justify-center text-foreground/90 hover:text-primary"
-                          onClick={() => setIsMenuOpen(false)}
                         >
                           <User className="h-4 w-4 mr-2" />
                           Profil
@@ -213,9 +223,7 @@ export function Header() {
                       </Link>
                     )}
                     {user && (
-                      <div className="text-sm text-foreground/70 py-2">
-                        Bonjour, {user.firstName || user.email}
-                      </div>
+                      <div className="text-sm text-foreground/70 py-2">Bonjour, {user.firstName || user.email}</div>
                     )}
                     <Button
                       variant="ghost"
@@ -229,22 +237,17 @@ export function Header() {
                   </>
                 ) : (
                   <>
-                    <Link href="/login" className="block">
+                    <Link href="/login" className="block" onClick={closeMenus}>
                       <Button
                         variant="ghost"
                         size="sm"
                         className="w-full justify-center text-foreground/90 hover:text-primary"
-                        onClick={() => setIsMenuOpen(false)}
                       >
                         Se Connecter
                       </Button>
                     </Link>
-                    <Link href="/signup" className="block">
-                      <Button
-                        size="sm"
-                        className="w-full text-foreground/90 hover:text-primary"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
+                    <Link href="/signup" className="block" onClick={closeMenus}>
+                      <Button size="sm" className="w-full text-foreground/90 hover:text-primary">
                         S'inscrire
                       </Button>
                     </Link>
@@ -256,5 +259,5 @@ export function Header() {
         </div>
       )}
     </header>
-  );
+  )
 }
