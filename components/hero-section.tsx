@@ -1,6 +1,13 @@
+'use client';
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
+  const handleScrollToPricing = () => {
+    const pricingSection = document.getElementById("pricing")
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: "smooth" })
+    }
+  }
   return (
     <section className="relative mt-10 overflow-hidden bg-gradient-to-br from-background via-background/95 to-primary/10 dark:from-background dark:via-background/95 dark:to-primary/5 pt-0 pb-12 sm:pb-16 md:pb-24 lg:pb-32 flex items-start justify-center">
       <div className="absolute inset-0 opacity-30 dark:opacity-20">
@@ -33,6 +40,7 @@ export function HeroSection() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 sm:pt-4 md:pt-6 w-full">
             <Button
+            onClick={handleScrollToPricing}
               size="lg"
               className="group relative overflow-hidden w-full sm:w-auto px-8 md:px-16 text-lg md:text-xl py-4 md:py-6 min-h-[56px] 
              bg-transparent border-2 border-primary text-primary dark:text-primary rounded-xl
@@ -43,9 +51,9 @@ export function HeroSection() {
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 dark:from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </Button>
 
-            <button className="text-foreground/80 dark:text-foreground/80 hover:text-foreground dark:hover:text-foreground transition-colors duration-200 text-lg underline underline-offset-4">
+            {/* <button className="text-foreground/80 dark:text-foreground/80 hover:text-foreground dark:hover:text-foreground transition-colors duration-200 text-lg underline underline-offset-4">
               Regarder la démo
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
