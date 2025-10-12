@@ -26,6 +26,8 @@ export const plans = (isAnnual) => {
       period: isAnnual ? "/year" : "/month",
       monthlyStripePriceId: "price_1S8PGODXn8wpi5tc8kNv3RGF",
       yearlyStripePriceId: "price_1S8PJLDXn8wpi5tcMvCAfDPZ",
+      // monthlyStripePriceId: "price_1S8Lse1mkOUsOofRthDKWEpr",
+      // yearlyStripePriceId: "price_1S8LsS1mkOUsOofRxW1JOiC1",
       description:
         "Pour l’agent ambitieux qui veut se démarquer et atteindre de nouveaux sommets",
       features: [
@@ -50,6 +52,8 @@ export const plans = (isAnnual) => {
       period: isAnnual ? "/year" : "/month",
       monthlyStripePriceId: "price_1S8PMxDXn8wpi5tcOq3jKYbO",
       yearlyStripePriceId: "price_1S8PQtDXn8wpi5tczntQIsv7",
+      // monthlyStripePriceId: "price_1S8LuD1mkOUsOofRsvpMgaYP",
+      // yearlyStripePriceId: "price_1S8LuO1mkOUsOofR8CIZIphb",
       description:
       "Pour les équipes qui veulent dominer leur marché et évoluer rapidement.",
     features: [

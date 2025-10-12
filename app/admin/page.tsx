@@ -170,7 +170,7 @@ export default function AdminPage() {
     setShowCancelDialog(null);
   };
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = users?.filter((user) => {
     const matchesSearch =
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -192,7 +192,7 @@ export default function AdminPage() {
       (u) => u?.subscription?.status !== "active"
     ).length,
     totalRevenue: users
-      .filter((u) => u?.subscription?.status === "active")
+      ?.filter((u) => u?.subscription?.status === "active")
       .reduce(
         (sum, u) => sum + Number.parseFloat(u?.subscription?.priceAmount),
         0
@@ -285,7 +285,7 @@ export default function AdminPage() {
                 <Download className="h-8 w-8 text-blue-500 flex-shrink-0" />
                 <div className="min-w-0">
                   <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    €{stats.totalRevenue.toFixed(2)}
+                    €{stats.totalRevenue?.toFixed(2)}
                   </p>
                   <p className="text-xs sm:text-sm text-foreground/70 dark:text-foreground/80 truncate">
                     Monthly Revenue
@@ -370,12 +370,12 @@ export default function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredUsers.map((user) => (
+                    {filteredUsers?.map((user) => (
                       <TableRow key={user?._id} className="hover:bg-primary/5">
                         <TableCell className="p-3 sm:p-4">
                           <div className="space-y-1">
                             <p className="font-medium text-sm sm:text-base">
-                              {user.firstName}
+                              {user?.firstName}
                               {""} {user?.lastName}
                             </p>
                             <p className="text-xs sm:text-sm text-muted-foreground">
@@ -434,7 +434,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {filteredUsers.length === 0 && (
+            {filteredUsers?.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
                   No users found matching your criteria.

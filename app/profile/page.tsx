@@ -20,14 +20,14 @@ import {
   AlertTriangle,
   Settings,
   Shield,
-  Loader2,
+  
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { plans } from "@/utils/plans";
-import { set } from "mongoose";
+
 import { ProfileSkeleton } from "@/components/ProfileSkeleton";
 
 export default function ProfilePage() {
@@ -185,6 +185,8 @@ export default function ProfilePage() {
       },
       body: JSON.stringify({
         subscriptionId: subscriptionData?.stripeData?.subscriptionId,
+        actor: "user",
+        email: userData.email,
       }),
     });
     if (!cancelSubscription.ok) {

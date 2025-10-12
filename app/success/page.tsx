@@ -32,10 +32,10 @@ export default function SuccessPage() {
         )} */}
 
         <Link
-          href="/"
+          href="/profile"
           className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition"
         >
-          Go to Dashboard
+          Go to Profile
         </Link>
       </div>
     </div>
