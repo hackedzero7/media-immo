@@ -57,15 +57,61 @@ export async function POST(req: Request) {
     );
     const summary = allItems[0]
 
+    // if (summary) {
+    //   try {
+    //     const alreadySent = await EmailLog.findOne({
+    //       userId: getUser._id,
+    //       subscriptionId: summary.subscriptionId,
+    //       type: "purchase",
+    //     })
+
+    //     if (!alreadySent) {
+    //       await sendPurchaseEmails({
+    //         userEmail: email,
+    //         productName: summary.productName,
+    //         priceAmount: summary.priceAmount,
+    //         priceCurrency: summary.priceCurrency,
+    //         interval: summary.interval,
+    //         subscriptionId: summary.subscriptionId,
+    //         currentPeriodEnd: summary.currentPeriodEnd,
+    //       })
+
+    //       await EmailLog.create({
+    //         userId: getUser._id,
+    //         subscriptionId: summary.subscriptionId,
+    //         type: "purchase",
+    //       })
+    //     }
+    //   } catch (mailErr) {
+    //     console.warn("[v0] Purchase email send/log failed:", mailErr)
+    //     // Do not fail the entire request on mailer/log error
+    //   }
+    // }
+  
+
+    // Automatically send purchase email only once per (user, subscription)
     if (summary) {
       try {
-        const alreadySent = await EmailLog.findOne({
+        const filter = {
           userId: getUser._id,
           subscriptionId: summary.subscriptionId,
           type: "purchase",
-        })
+        }
 
-        if (!alreadySent) {
+        const update = {
+          $setOnInsert: {
+            userId: getUser._id,
+            subscriptionId: summary.subscriptionId,
+            type: "purchase",
+            createdAt: new Date(),
+          },
+        }
+
+        const gate = await EmailLog.updateOne(filter, update, { upsert: true })
+        const upserted = (gate as any)?.upsertedCount && (gate as any).upsertedCount > 0
+        const firstTime = upserted || ((gate as any)?.matchedCount ?? 0) === 0
+
+        if (firstTime) {
           await sendPurchaseEmails({
             userEmail: email,
             productName: summary.productName,
@@ -75,12 +121,9 @@ export async function POST(req: Request) {
             subscriptionId: summary.subscriptionId,
             currentPeriodEnd: summary.currentPeriodEnd,
           })
-
-          await EmailLog.create({
-            userId: getUser._id,
-            subscriptionId: summary.subscriptionId,
-            type: "purchase",
-          })
+          // No separate create() call — the upsert above serves as the log
+        } else {
+          // console.log("[v0] Purchase email already sent for this (user, subscription); skipping.")
         }
       } catch (mailErr) {
         console.warn("[v0] Purchase email send/log failed:", mailErr)

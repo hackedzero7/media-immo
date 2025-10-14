@@ -6,20 +6,42 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const { login, isLoading, error, clearError } = useAuth()
   const router = useRouter()
+
+  // Load saved email if "Remember Me" was checked previously
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail")
+    const wasRemembered = localStorage.getItem("rememberMe") === "true"
+    
+    if (savedEmail && wasRemembered) {
+      setEmail(savedEmail)
+      setRememberMe(true)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     clearError()
+
+    // Save or remove email based on "Remember Me" checkbox
+    if (rememberMe) {
+      localStorage.setItem("rememberedEmail", email)
+      localStorage.setItem("rememberMe", "true")
+    } else {
+      localStorage.removeItem("rememberedEmail")
+      localStorage.removeItem("rememberMe")
+    }
 
     const result = await login(email, password)
     if (result.success) {
@@ -67,15 +89,29 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-sm font-medium">
                   Mot de passe
                 </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Entrez votre mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Entrez votre mot de passe"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -101,7 +137,7 @@ export default function LoginPage() {
               </Button>
             </form>
             <div className="text-center text-sm text-muted-foreground">
-              Vous n’avez pas de compte ?{" "}
+              Vous n'avez pas de compte ?{" "}
               <Link href="/signup" className="text-primary hover:text-primary/80 font-medium transition-colors">
                 Inscrivez-vous
               </Link>

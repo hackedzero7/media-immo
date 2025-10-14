@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function SignupPage() {
   const [firstName, setFirstName] = useState("")
@@ -18,6 +19,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { signup, isLoading, error, clearError } = useAuth()
   const router = useRouter()
 
@@ -110,29 +113,57 @@ export default function SignupPage() {
                 <Label htmlFor="password" className="text-sm font-medium">
                   Mot de passe
                 </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Créez un mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Créez un mot de passe"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="text-sm font-medium">
                   Confirmer le mot de passe
                 </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirmez votre mot de passe"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm"
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirmez votre mot de passe"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <input
