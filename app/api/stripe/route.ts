@@ -33,12 +33,23 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
+      automatic_tax: {
+        enabled: true,
+      },
+      tax_id_collection: {
+        enabled: true,
+      },
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
+    console.log('this is the error', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
