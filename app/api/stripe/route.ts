@@ -33,6 +33,16 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
+      automatic_tax: {
+        enabled: true,
+      },
+      tax_id_collection: {
+        enabled: true,
+      },
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
     });
