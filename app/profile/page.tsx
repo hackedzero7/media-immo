@@ -1,43 +1,32 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  User,
-  Calendar,
-  CreditCard,
-  AlertTriangle,
-  Settings,
-  Shield,
-  
-} from "lucide-react";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { plans } from "@/utils/plans";
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { User, Calendar, CreditCard, AlertTriangle, Settings, Shield, Download, FileText } from "lucide-react"
+import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { plans } from "@/utils/plans"
 
-import { ProfileSkeleton } from "@/components/ProfileSkeleton";
+import { ProfileSkeleton } from "@/components/ProfileSkeleton"
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [isEditing, setIsEditing] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [subscriptionData, setSubscriptionData] = useState<any>(null)
+  const [invoices, setInvoices] = useState<any[]>([])
+  const [loadingInvoices, setLoadingInvoices] = useState(false)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   const [userData, setUserData] = useState({
     firstName: "",
@@ -52,10 +41,10 @@ export default function ProfilePage() {
       nextBilling: "",
       features: [],
     },
-  });
+  })
 
   const getSubscription = async (session: any) => {
-    setLoading(true);
+    setLoading(true)
     if (session.user.email) {
       const subscription = await fetch("/api/subscription", {
         method: "POST",
@@ -63,57 +52,129 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: session.user.email }),
-      });
-      const subData = await subscription.json();
+      })
+      const subData = await subscription.json()
 
-      const isAnnual =
-        subData?.subscriptions?.interval === "month" ? false : true;
-      const plansData = plans(isAnnual);
+      const isAnnual = subData?.subscriptions?.interval === "month" ? false : true
+      const plansData = plans(isAnnual)
       const currentPlan = plansData.find((plan) =>
         isAnnual
           ? subData?.subscriptions?.priceId === plan.yearlyStripePriceId
-          : subData?.subscriptions?.priceId === plan.monthlyStripePriceId
-      );
-      setLoading(false);
+          : subData?.subscriptions?.priceId === plan.monthlyStripePriceId,
+      )
+      setLoading(false)
       return {
         currentPlan: currentPlan,
         isAnnual: isAnnual,
         stripeData: subData?.subscriptions,
-      };
+      }
     }
-  };
-  console.log("Subscription Data:", subscriptionData);
+  }
+
+  const fetchInvoices = async (email: string) => {
+    try {
+      setLoadingInvoices(true)
+      const response = await fetch("/api/invoices/list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setInvoices(data.invoices || [])
+      } else {
+        console.error("Failed to fetch invoices")
+      }
+    } catch (error) {
+      console.error("Error fetching invoices:", error)
+    } finally {
+      setLoadingInvoices(false)
+    }
+  }
+
+  const handleDownloadInvoice = async (invoiceId: string, invoiceNumber: string) => {
+    try {
+      setDownloadingId(invoiceId)
+
+      const subscriptionId = subscriptionData?.stripeData?.subscriptionId
+
+      console.log("[v0] handleDownloadInvoice called for:", invoiceId)
+      console.log("[v0] Using subscriptionId:", subscriptionId)
+
+      if (!subscriptionId) {
+        console.log("[v0] No subscriptionId found in subscription data")
+        toast.error("Subscription ID not found")
+        return
+      }
+
+      console.log("[v0] Fetching invoice with subscriptionId:", subscriptionId)
+      const res = await fetch(`/api/invoices?subscriptionId=${encodeURIComponent(subscriptionId)}`)
+
+      console.log("[v0] Fetch response status:", res.status)
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        console.log("[v0] API error response:", errorData)
+        toast.error(errorData?.error || "Failed to download invoice")
+        return
+      }
+
+      const blob = await res.blob()
+      console.log("[v0] Received blob of size:", blob.size)
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `invoice-${invoiceNumber}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      toast.success("Invoice downloaded successfully")
+    } catch (error: any) {
+      console.error("[v0] Error downloading invoice:", error)
+      toast.error(error?.message || "Failed to download invoice")
+    } finally {
+      setDownloadingId(null)
+    }
+  }
+
+  console.log("Subscription Data:", subscriptionData)
 
   useEffect(() => {
-    if (status === "loading") return;
+    if (status === "loading") return
 
     if (status === "unauthenticated") {
-      router.push("/login");
-      return;
+      router.push("/login")
+      return
     }
 
     if (session?.user) {
-      (async () => {
-        setLoading(true);
-        fetchUserProfile();
-        setLoading(false);
-      })();
+      ;(async () => {
+        setLoading(true)
+        fetchUserProfile()
+        setLoading(false)
+      })()
     }
-  }, [session, status, router]);
+  }, [session, status, router])
 
   const fetchUserProfile = async () => {
     try {
-      setLoading(true);
-      const response = await fetch("/api/user/profile");
+      setLoading(true)
+      const response = await fetch("/api/user/profile")
 
       if (!response.ok) {
-        throw new Error("Échec du chargement du profil");
+        throw new Error("Échec du chargement du profil")
       }
 
-      const subData: any = await getSubscription(session);
-      setSubscriptionData(subData);
-      const data = await response.json();
-      const user = data.user;
+      const subData: any = await getSubscription(session)
+      setSubscriptionData(subData)
+      const data = await response.json()
+      const user = data.user
 
       setUserData({
         firstName: user.firstName || "",
@@ -123,24 +184,26 @@ export default function ProfilePage() {
         joinDate: user.createdAt || new Date().toISOString(),
         subscription: {
           plan: subData?.currentPlan?.name,
-          price: subData?.isAnnual
-            ? `${subData?.currentPlan?.annual}/an`
-            : `${subData?.currentPlan?.monthly}/mois`,
+          price: subData?.isAnnual ? `${subData?.currentPlan?.annual}/an` : `${subData?.currentPlan?.monthly}/mois`,
           status: subData?.stripeData?.status,
           nextBilling: subData?.stripeData?.currentPeriodEnd,
           features: subData?.currentPlan?.features || [],
         },
-      });
+      })
+
+      if (user.email) {
+        fetchInvoices(user.email)
+      }
     } catch (error) {
-      toast.error("Impossible de charger les données du profil");
+      toast.error("Impossible de charger les données du profil")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSaveProfile = async () => {
     try {
-      setSaving(true);
+      setSaving(true)
 
       const response = await fetch("/api/user/profile", {
         method: "PUT",
@@ -151,32 +214,30 @@ export default function ProfilePage() {
           firstName: userData.firstName,
           lastName: userData.lastName,
         }),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Échec de la mise à jour du profil");
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Échec de la mise à jour du profil")
       }
 
-      await response.json();
-      toast.success("Profil mis à jour avec succès !");
-      setIsEditing(false);
+      await response.json()
+      toast.success("Profil mis à jour avec succès !")
+      setIsEditing(false)
 
       if (session?.user) {
-        session.user.name = `${userData.firstName} ${userData.lastName}`;
+        session.user.name = `${userData.firstName} ${userData.lastName}`
       }
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du profil:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Échec de la mise à jour du profil"
-      );
+      console.error("Erreur lors de la mise à jour du profil:", error)
+      toast.error(error instanceof Error ? error.message : "Échec de la mise à jour du profil")
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const handleCancelSubscription = async () => {
-    setShowCancelDialog(false);
+    setShowCancelDialog(false)
 
     const cancelSubscription = await fetch("/api/subscription", {
       method: "PUT",
@@ -188,23 +249,21 @@ export default function ProfilePage() {
         actor: "user",
         email: userData.email,
       }),
-    });
+    })
     if (!cancelSubscription.ok) {
-      toast.error("Échec de l’annulation de l’abonnement. Réessayez plus tard.");
-      return;
+      toast.error("Échec de l'annulation de l'abonnement. Réessayez plus tard.")
+      return
     }
     setUserData((prev) => ({
       ...prev,
       subscription: { ...prev.subscription, status: "annulé" },
-    }));
+    }))
 
-    toast.success("Abonnement annulé avec succès");
-  };
+    toast.success("Abonnement annulé avec succès")
+  }
 
   if (status === "loading" || loading) {
-    return (
-      <ProfileSkeleton/>
-    );
+    return <ProfileSkeleton />
   }
 
   return loading ? (
@@ -243,9 +302,7 @@ export default function ProfilePage() {
                   <Input
                     id="firstName"
                     value={userData.firstName}
-                    onChange={(e) =>
-                      setUserData((prev) => ({ ...prev, firstName: e.target.value }))
-                    }
+                    onChange={(e) => setUserData((prev) => ({ ...prev, firstName: e.target.value }))}
                     disabled={!isEditing}
                   />
                 </div>
@@ -257,9 +314,7 @@ export default function ProfilePage() {
                   <Input
                     id="lastName"
                     value={userData.lastName}
-                    onChange={(e) =>
-                      setUserData((prev) => ({ ...prev, lastName: e.target.value }))
-                    }
+                    onChange={(e) => setUserData((prev) => ({ ...prev, lastName: e.target.value }))}
                     disabled={!isEditing}
                   />
                 </div>
@@ -269,18 +324,14 @@ export default function ProfilePage() {
                     Adresse Email
                   </Label>
                   <Input id="email" type="email" value={userData.email} disabled />
-                  <p className="text-xs text-muted-foreground">
-                    L’adresse email ne peut pas être modifiée
-                  </p>
+                  <p className="text-xs text-muted-foreground">L’adresse email ne peut pas être modifiée</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Rôle</Label>
                   <div className="flex items-center gap-2 p-3 bg-background/50 border rounded-md">
                     <Shield className="h-4 w-4 text-muted-foreground" />
-                    <Badge>
-                      {userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}
-                    </Badge>
+                    <Badge>{userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}</Badge>
                   </div>
                 </div>
 
@@ -288,9 +339,7 @@ export default function ProfilePage() {
                   <Label className="text-sm font-medium">Membre depuis</Label>
                   <div className="flex items-center gap-2 p-3 bg-background/50 border rounded-md">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {new Date(userData.joinDate).toLocaleDateString()}
-                    </span>
+                    <span className="text-sm">{new Date(userData.joinDate).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
@@ -308,8 +357,8 @@ export default function ProfilePage() {
                     </Button>
                     <Button
                       onClick={() => {
-                        setIsEditing(false);
-                        fetchUserProfile();
+                        setIsEditing(false)
+                        fetchUserProfile()
                       }}
                       variant="outline"
                       disabled={saving}
@@ -330,9 +379,7 @@ export default function ProfilePage() {
                   <CreditCard className="h-5 w-5 text-primary" />
                   Détails de l’Abonnement
                 </CardTitle>
-                <CardDescription>
-                  Gérez votre abonnement et votre facturation
-                </CardDescription>
+                <CardDescription>Gérez votre abonnement et votre facturation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 p-4 sm:p-6">
                 <div className="flex justify-between">
@@ -350,9 +397,7 @@ export default function ProfilePage() {
                 {userData.subscription.status === "active" && (
                   <div className="flex justify-between">
                     <span>Prochaine Facturation</span>
-                    <span>
-                      {new Date(userData.subscription.nextBilling).toLocaleDateString()}
-                    </span>
+                    <span>{new Date(userData.subscription.nextBilling).toLocaleDateString()}</span>
                   </div>
                 )}
                 <Separator />
@@ -378,6 +423,65 @@ export default function ProfilePage() {
           )}
         </div>
 
+        {subscriptionData?.stripeData?.status === "active" && (
+          <Card className="backdrop-blur-sm bg-card/50 border-2 border-primary/20 shadow-xl">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Télécharger les Factures
+              </CardTitle>
+              <CardDescription>Accédez à tous vos reçus mensuels et annuels</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              {loadingInvoices ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Chargement des factures...</p>
+                </div>
+              ) : invoices.length > 0 ? (
+                <div className="space-y-3">
+                  {invoices.map((invoice) => (
+                    <div
+                      key={invoice.id}
+                      className="flex items-center justify-between p-4 bg-background/50 border rounded-lg hover:bg-background/70 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-sm">Facture #{invoice.number}</p>
+                          <p className="text-xs text-muted-foreground">{invoice.date}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-semibold text-sm">
+                            {invoice.amount.toFixed(2)} {invoice.currency}
+                          </p>
+                          <Badge variant="outline" className="text-xs">
+                            {invoice.status}
+                          </Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDownloadInvoice(invoice.id, invoice.number)}
+                          disabled={downloadingId === invoice.id}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          {downloadingId === invoice.id ? "..." : "Télécharger"}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Aucune facture disponible pour le moment</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Dialogue Annulation */}
         {showCancelDialog && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
@@ -387,9 +491,7 @@ export default function ProfilePage() {
                   <AlertTriangle className="h-5 w-5" />
                   Annuler l’Abonnement
                 </CardTitle>
-                <CardDescription>
-                  Êtes-vous sûr de vouloir annuler ? Cette action est irréversible.
-                </CardDescription>
+                <CardDescription>Êtes-vous sûr de vouloir annuler ? Cette action est irréversible.</CardDescription>
               </CardHeader>
               <CardContent>
                 <p>
@@ -416,5 +518,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
