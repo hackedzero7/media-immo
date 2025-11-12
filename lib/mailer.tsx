@@ -224,7 +224,7 @@ function buildIndependentWelcomeEmail() {
     "• 🌅 Photos crépusculaires offertes pour vos maisons",
     "• ⚡ Livraison express 24h garantie",
     "• 💎 Support client VIP + priorité sur les créneaux",
-    "• 🎁 10% de remise sur tous nos services",
+    "• 🎁 20% de remise sur tous nos services",
     "• 📷 Un shooting offert à chaque 11ᵉ projet",
     "• 🌐 Kit réseaux sociaux + mini-site web pour chaque bien",
     "",
@@ -252,7 +252,7 @@ function buildIndependentWelcomeEmail() {
         <li>🌅 Photos crépusculaires offertes pour vos maisons</li>
         <li>⚡ Livraison express 24h garantie</li>
         <li>💎 Support client VIP + priorité sur les créneaux</li>
-        <li>🎁 10% de remise sur tous nos services</li>
+        <li>🎁 20% de remise sur tous nos services</li>
         <li>📷 Un shooting offert à chaque 11ᵉ projet</li>
         <li>🌐 Kit réseaux sociaux + mini-site web pour chaque bien</li>
       </ul>
