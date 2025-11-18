@@ -25,7 +25,8 @@ export const plans = (isAnnual) => {
       fakeamount: "€6.65",
       period: isAnnual ? "/year" : "/month",
       monthlyStripePriceId: "price_1S8PGODXn8wpi5tc8kNv3RGF",
-      yearlyStripePriceId: "price_1S8PJLDXn8wpi5tcMvCAfDPZ",
+      yearlyStripePriceId: "price_1SUpX2DXn8wpi5tc0sJMSm2D", //new price
+      // yearlyStripePriceId: "price_1S8PJLDXn8wpi5tcMvCAfDPZ", //archived this price
       // monthlyStripePriceId: "price_1S8Lse1mkOUsOofRthDKWEpr",
       // yearlyStripePriceId: "price_1S8LsS1mkOUsOofRxW1JOiC1",
       description:
