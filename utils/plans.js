@@ -37,7 +37,7 @@ export const plans = (isAnnual) => {
         "Photos crépusculaires offertes (maisons)",
         "Livraison express 24h garantie",
         "Support client VIP + priorité sur les créneaux",
-        "10% de remise sur tous les services",
+        "20% de remise sur tous les services",
         "Un shooting offert à chaque 11e projet",
         "Kit réseaux sociaux & Site web pour chaque bien",
       ],
