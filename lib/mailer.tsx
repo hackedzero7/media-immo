@@ -1,16 +1,16 @@
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
 
-const FROM = MAIL_FROM || SMTP_USER
+const FROM = MAIL_FROM || SMTP_USER;
 
 if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !FROM) {
   console.warn(
-    "[v0] Missing SMTP env vars. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and MAIL_FROM (or allow fallback to SMTP_USER).",
-  )
+    "[v0] Missing SMTP env vars. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and MAIL_FROM (or allow fallback to SMTP_USER)."
+  );
 }
 
-let transporter: nodemailer.Transporter | null = null
+let transporter: nodemailer.Transporter | null = null;
 
 function getTransporter() {
   if (!transporter) {
@@ -19,43 +19,58 @@ function getTransporter() {
       port: Number(SMTP_PORT || 587),
       secure: Number(SMTP_PORT || 587) === 465,
       auth: { user: SMTP_USER, pass: SMTP_PASS },
-    })
+      // service: "gmail",
+      // auth: {
+      //   user: SMTP_USER,
+      //   pass: SMTP_PASS,
+      // },
+      // debug: true,
+      // logger: true,
+    });
   }
-  return transporter
+  return transporter;
 }
 
 export async function sendMail(params: {
-  to: string
-  subject: string
-  html?: string
-  text?: string
+  to: string;
+  subject: string;
+  html?: string;
+  text?: string;
 }) {
-  const tx = getTransporter()
-  const { to, subject, html, text } = params
+  const tx = getTransporter();
+  const { to, subject, html, text } = params;
   return tx.sendMail({
     from: FROM,
     to,
     subject,
     text,
     html,
-  })
+  });
 }
 
 export async function sendPurchaseEmails(params: {
-  userEmail: string
-  productName: string
-  priceAmount: number
-  priceCurrency: string
-  interval?: string
-  subscriptionId: string
-  currentPeriodEnd: Date | string | number
+  userEmail: string;
+  productName: string;
+  priceAmount: number;
+  priceCurrency: string;
+  interval?: string;
+  subscriptionId: string;
+  currentPeriodEnd: Date | string | number;
 }) {
-  const { userEmail, productName, priceAmount, priceCurrency, interval, subscriptionId, currentPeriodEnd } = params
+  const {
+    userEmail,
+    productName,
+    priceAmount,
+    priceCurrency,
+    interval,
+    subscriptionId,
+    currentPeriodEnd,
+  } = params;
 
-  const adminEmail = process.env.ADMIN_EMAIL
+  const adminEmail = process.env.ADMIN_EMAIL;
   if (!userEmail) {
-    console.warn("[v0] sendPurchaseEmails called without userEmail")
-    return
+    console.warn("[v0] sendPurchaseEmails called without userEmail");
+    return;
   }
 
   const amount = (() => {
@@ -63,16 +78,16 @@ export async function sendPurchaseEmails(params: {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: (priceCurrency || "USD").toUpperCase(),
-      }).format(Number(priceAmount || 0))
+      }).format(Number(priceAmount || 0));
     } catch {
-      return `${priceAmount} ${priceCurrency || "usd"}`
+      return `${priceAmount} ${priceCurrency || "usd"}`;
     }
-  })()
+  })();
 
-  const periodEnd = new Date(currentPeriodEnd)
+  const periodEnd = new Date(currentPeriodEnd);
   const periodEndStr = isNaN(periodEnd.getTime())
     ? String(currentPeriodEnd)
-    : `${periodEnd.toLocaleDateString()} ${periodEnd.toLocaleTimeString()}`
+    : `${periodEnd.toLocaleDateString()} ${periodEnd.toLocaleTimeString()}`;
 
   const commonLines = [
     `Product: ${productName}`,
@@ -80,12 +95,12 @@ export async function sendPurchaseEmails(params: {
     `Amount: ${amount}`,
     `Subscription ID: ${subscriptionId}`,
     `Current Period End: ${periodEndStr}`,
-  ]
+  ];
 
   // DEFAULT user email content (generic)
-  let userSubject = `Subscription confirmed: ${productName}`
+  let userSubject = `Subscription confirmed: ${productName}`;
   let userText = `Thanks for your purchase!
-${commonLines.join("\n")}`
+${commonLines.join("\n")}`;
   let userHtml = `
     <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; line-height: 1.6;">
       <h2 style="margin: 0 0 12px;">Thanks for your purchase!</h2>
@@ -98,27 +113,31 @@ ${commonLines.join("\n")}`
         <li><strong>Current Period End:</strong> ${periodEndStr}</li>
       </ul>
     </div>
-  `
+  `;
 
   // Override user email content based on productName (Indépendant vs Agence)
-  const n = (productName || "").toLowerCase()
-  if (n.includes("indépendant") || n.includes("independant") || n.includes("independent")) {
-    const t = buildIndependentWelcomeEmail()
-    userSubject = t.subject
-    userText = t.text
-    userHtml = t.html
+  const n = (productName || "").toLowerCase();
+  if (
+    n.includes("indépendant") ||
+    n.includes("independant") ||
+    n.includes("independent")
+  ) {
+    const t = buildIndependentWelcomeEmail();
+    userSubject = t.subject;
+    userText = t.text;
+    userHtml = t.html;
   } else if (n.includes("agence") || n.includes("agency")) {
-    const t = buildAgencyWelcomeEmail()
-    userSubject = t.subject
-    userText = t.text
-    userHtml = t.html
+    const t = buildAgencyWelcomeEmail();
+    userSubject = t.subject;
+    userText = t.text;
+    userHtml = t.html;
   }
 
   // Admin notification (unchanged)
-  const adminSubject = `New subscription: ${productName} by ${userEmail}`
+  const adminSubject = `New subscription: ${productName} by ${userEmail}`;
   const adminText = `A user completed a subscription.
 User: ${userEmail}
-${commonLines.join("\n")}`
+${commonLines.join("\n")}`;
   const adminHtml = `
     <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; line-height: 1.6;">
       <h2 style="margin: 0 0 12px;">New subscription</h2>
@@ -132,49 +151,68 @@ ${commonLines.join("\n")}`
         <li><strong>Current Period End:</strong> ${periodEndStr}</li>
       </ul>
     </div>
-  `
+  `;
 
-  const tasks: Promise<unknown>[] = [sendMail({ to: userEmail, subject: userSubject, text: userText, html: userHtml })]
+  const tasks: Promise<unknown>[] = [
+    sendMail({
+      to: userEmail,
+      subject: userSubject,
+      text: userText,
+      html: userHtml,
+    }),
+  ];
   if (adminEmail) {
-    tasks.push(sendMail({ to: adminEmail, subject: adminSubject, text: adminText, html: adminHtml }))
+    tasks.push(
+      sendMail({
+        to: adminEmail,
+        subject: adminSubject,
+        text: adminText,
+        html: adminHtml,
+      })
+    );
   } else {
-    console.warn("[v0] ADMIN_EMAIL is not set; skipping admin notification")
+    console.warn("[v0] ADMIN_EMAIL is not set; skipping admin notification");
   }
 
-  await Promise.allSettled(tasks)
+  await Promise.allSettled(tasks);
 }
 
 export async function sendCancellationEmails(params: {
-  actor: "user" | "admin"
-  userEmail?: string
-  productName?: string
-  subscriptionId: string
+  actor: "user" | "admin";
+  userEmail?: string;
+  productName?: string;
+  subscriptionId: string;
 }) {
-  const adminEmail = process.env.ADMIN_EMAIL
-  const { actor, userEmail, productName = "Subscription", subscriptionId } = params
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const {
+    actor,
+    userEmail,
+    productName = "Subscription",
+    subscriptionId,
+  } = params;
 
   // Build common pieces
-  const subLine = `Subscription ID: ${subscriptionId}`
-  const subjectUser = `Your subscription was cancelled`
-  const subjectAdmin = `User cancelled subscription`
-  const bodyUserText = `Your ${productName} subscription has been cancelled.\n${subLine}`
-  const bodyAdminText = `A user has cancelled their ${productName} subscription.\n${subLine}`
+  const subLine = `Subscription ID: ${subscriptionId}`;
+  const subjectUser = `Your subscription was cancelled`;
+  const subjectAdmin = `User cancelled subscription`;
+  const bodyUserText = `Your ${productName} subscription has been cancelled.\n${subLine}`;
+  const bodyAdminText = `A user has cancelled their ${productName} subscription.\n${subLine}`;
   const bodyUserHtml = `
     <div style="font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6">
       <h3 style="margin:0 0 8px">Your subscription was cancelled</h3>
       <p style="margin:0 0 8px"><strong>Product:</strong> ${productName}</p>
       <p style="margin:0 0 8px"><strong>${subLine}</strong></p>
     </div>
-  `
+  `;
   const bodyAdminHtml = `
     <div style="font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6">
       <h3 style="margin:0 0 8px">User cancelled subscription</h3>
       <p style="margin:0 0 8px"><strong>Product:</strong> ${productName}</p>
       <p style="margin:0 0 8px"><strong>${subLine}</strong></p>
     </div>
-  `
+  `;
 
-  const tasks: Promise<unknown>[] = []
+  const tasks: Promise<unknown>[] = [];
 
   if (actor === "user") {
     // Notify admin only
@@ -185,10 +223,12 @@ export async function sendCancellationEmails(params: {
           subject: subjectAdmin,
           text: bodyAdminText,
           html: bodyAdminHtml,
-        }),
-      )
+        })
+      );
     } else {
-      console.warn("[v0] ADMIN_EMAIL is not set; skipping admin cancellation notification")
+      console.warn(
+        "[v0] ADMIN_EMAIL is not set; skipping admin cancellation notification"
+      );
     }
   } else if (actor === "admin") {
     // Notify user only
@@ -199,18 +239,20 @@ export async function sendCancellationEmails(params: {
           subject: subjectUser,
           text: bodyUserText,
           html: bodyUserHtml,
-        }),
-      )
+        })
+      );
     } else {
-      console.warn("[v0] userEmail not provided; skipping user cancellation notification")
+      console.warn(
+        "[v0] userEmail not provided; skipping user cancellation notification"
+      );
     }
   }
 
-  await Promise.allSettled(tasks)
+  await Promise.allSettled(tasks);
 }
 
 function buildIndependentWelcomeEmail() {
-  const subject = "🎉 Bienvenue dans l’abonnement Indépendant de MEDIA IMMO !"
+  const subject = "🎉 Bienvenue dans l’abonnement Indépendant de MEDIA IMMO !";
   const text = [
     "Bonjour,",
     "",
@@ -237,7 +279,7 @@ function buildIndependentWelcomeEmail() {
     "📞 +33 7 67 57 92 28",
     "🌐 https://www.forfaitsmediaimmobilier.com/",
     "📸 Instagram : @mediaimmo",
-  ].join("\n")
+  ].join("\n");
 
   const html = `
     <div style="font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; line-height:1.6;">
@@ -261,12 +303,12 @@ function buildIndependentWelcomeEmail() {
       <p style="margin:0 0 8px;">À très vite,<br/>L’équipe MEDIA IMMO</p>
       <p style="margin:0 0 8px;">📞 +33 7 67 57 92 28<br/>🌐 https://www.forfaitsmediaimmobilier.com/<br/>📸 Instagram : @mediaimmo</p>
     </div>
-  `
-  return { subject, text, html }
+  `;
+  return { subject, text, html };
 }
 
 function buildAgencyWelcomeEmail() {
-  const subject = "🚀 Votre agence rejoint la communauté MEDIA IMMO PRO !"
+  const subject = "🚀 Votre agence rejoint la communauté MEDIA IMMO PRO !";
   const text = [
     "Bonjour,",
     "",
@@ -292,7 +334,7 @@ function buildAgencyWelcomeEmail() {
     "📞 +33 7 67 57 92 28",
     "🌐 https://www.forfaitsmediaimmobilier.com/",
     "📸 Instagram : @mediaimmo",
-  ].join("\n")
+  ].join("\n");
 
   const html = `
     <div style="font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; line-height:1.6;">
@@ -315,6 +357,6 @@ function buildAgencyWelcomeEmail() {
       <p style="margin:0 0 8px;">À très bientôt,<br/>L’équipe MEDIA IMMO</p>
       <p style="margin:0 0 8px;">📞 +33 7 67 57 92 28<br/>🌐 https://www.forfaitsmediaimmobilier.com/<br/>📸 Instagram : @mediaimmo</p>
     </div>
-  `
-  return { subject, text, html }
+  `;
+  return { subject, text, html };
 }

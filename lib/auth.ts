@@ -8,6 +8,70 @@ import { dbConnect } from "./mongodb"
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: "otp",
+      name: "otp",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        code: { label: "Code", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.code) {
+          throw new Error("Please enter your email and code")
+        }
+
+        try {
+          await dbConnect()
+
+          const normalizedEmail = credentials.email.toLowerCase().trim()
+          const normalizedCode = credentials.code.trim()
+
+          const user = await User.findOne({ email: normalizedEmail })
+
+          if (!user) {
+            throw new Error("Invalid email or code")
+          }
+
+          // Check if code exists and is not expired
+          if (!user.loginCode || !user.loginCodeExpiresAt) {
+            throw new Error("Invalid email or code")
+          }
+
+          const now = new Date()
+          if (now > user.loginCodeExpiresAt) {
+            // Clear expired code
+            user.loginCode = null
+            user.loginCodeExpiresAt = null
+            await user.save()
+            throw new Error("Code has expired. Please request a new one.")
+          }
+
+          // Verify code
+          if (user.loginCode !== normalizedCode) {
+            throw new Error("Invalid email or code")
+          }
+
+          // Code is valid - clear it (single-use)
+          user.loginCode = null
+          user.loginCodeExpiresAt = null
+          await user.save()
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error("OTP Auth error:", error)
+          if (error instanceof Error) {
+            throw error
+          }
+          throw new Error("Authentication failed. Please try again.")
+        }
+      },
+    }),
+    CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },

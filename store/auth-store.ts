@@ -27,12 +27,22 @@ interface AuthActions {
     email: string,
     password: string
   ) => Promise<{ success: boolean; error?: string }>;
+  sendLoginCode: (
+    email: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  verifyLoginCode: (
+    email: string,
+    code: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  sendSignupCode: (
+    firstName: string,
+    lastName: string,
+    email: string
+  ) => Promise<{ success: boolean; error?: string }>;
   signup: (userData: {
-    firstName: string;
-    lastName: string;
+    fullName: string;
     email: string;
-    password: string;
-    confirmPassword: string;
+    code: string;
   }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   clearError: () => void;
@@ -139,16 +149,160 @@ export const useAuthStore = create<AuthStore>()(
           }
         },
 
+        sendLoginCode: async (email) => {
+          set({ isLoading: true, error: null }, false, "sendLoginCode:start");
+
+          try {
+            const response = await fetch("/api/auth/send-login-code", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "sendLoginCode:error"
+              );
+              return { success: false, error: data.error };
+            }
+
+            set(
+              {
+                isLoading: false,
+                error: null,
+              },
+              false,
+              "sendLoginCode:success"
+            );
+
+            return { success: true };
+          } catch (error) {
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "sendLoginCode:network-error"
+            );
+            return { success: false, error: errorMessage };
+          }
+        },
+
+        verifyLoginCode: async (email, code) => {
+          set({ isLoading: true, error: null }, false, "verifyLoginCode:start");
+
+          try {
+            const response = await fetch("/api/auth/verify-login-code", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, code }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "verifyLoginCode:error"
+              );
+              return { success: false, error: data.error };
+            }
+
+            set(
+              {
+                user: data.user,
+                isAuthenticated: true,
+                isLoading: false,
+                error: null,
+              },
+              false,
+              "verifyLoginCode:success"
+            );
+
+            return { success: true };
+          } catch (error) {
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "verifyLoginCode:network-error"
+            );
+            return { success: false, error: errorMessage };
+          }
+        },
+
+        sendSignupCode: async (firstName, lastName, email) => {
+          set({ isLoading: true, error: null }, false, "sendSignupCode:start");
+
+          try {
+            const response = await fetch("/api/auth/send-signup-code", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ firstName, lastName, email }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              set(
+                { isLoading: false, error: data.error },
+                false,
+                "sendSignupCode:error"
+              );
+              return { success: false, error: data.error };
+            }
+
+            set(
+              {
+                isLoading: false,
+                error: null,
+              },
+              false,
+              "sendSignupCode:success"
+            );
+
+            return { success: true };
+          } catch (error) {
+            const errorMessage = "Network error. Please try again.";
+            set(
+              { isLoading: false, error: errorMessage },
+              false,
+              "sendSignupCode:network-error"
+            );
+            return { success: false, error: errorMessage };
+          }
+        },
+
         signup: async (userData) => {
           set({ isLoading: true, error: null }, false, "signup:start");
 
           try {
+            // Split fullName into firstName and lastName for the API
+            const nameParts = userData.fullName.trim().split(/\s+/)
+            const firstName = nameParts[0] || ""
+            const lastName = nameParts.slice(1).join(" ") || firstName
+
             const response = await fetch("/api/auth/signup", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(userData),
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                email: userData.email,
+                code: userData.code,
+              }),
             });
 
             const data = await response.json();
@@ -161,17 +315,6 @@ export const useAuthStore = create<AuthStore>()(
               );
               return { success: false, error: data.error };
             }
-
-            // set(
-            //   {
-            //     user: data.user,
-            //     isAuthenticated: true,
-            //     isLoading: false,
-            //     error: null,
-            //   },
-            //   false,
-            //   "signup:success",
-            // )
 
             return { success: true };
           } catch (error) {
