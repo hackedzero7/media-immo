@@ -5,6 +5,8 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
+  loginCode: string | null;
+  loginCodeExpiresAt: Date | null;
   role: "user" | "admin";
   createdAt: Date;
   updatedAt: Date;
@@ -41,8 +43,16 @@ const UserSchema: Schema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters"],
+      required: false,
+      default: null,
+    },
+    loginCode: {
+      type: String,
+      default: null,
+    },
+    loginCodeExpiresAt: {
+      type: Date,
+      default: null,
     },
     role: {
       type: String,

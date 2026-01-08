@@ -9,14 +9,16 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { Eye, EyeOff } from "lucide-react"
+import { signIn } from "next-auth/react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [code, setCode] = useState("")
+  const [step, setStep] = useState<"email" | "code">("email")
   const [rememberMe, setRememberMe] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const { login, isLoading, error, clearError } = useAuth()
+  const [verifyError, setVerifyError] = useState<string | null>(null)
+  const [isVerifying, setIsVerifying] = useState(false)
+  const { sendLoginCode, isLoading, error, clearError } = useAuth()
   const router = useRouter()
 
   // Load saved email if "Remember Me" was checked previously
@@ -30,9 +32,13 @@ export default function LoginPage() {
     }
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault()
     clearError()
+
+    if (!email) {
+      return
+    }
 
     // Save or remove email based on "Remember Me" checkbox
     if (rememberMe) {
@@ -43,11 +49,56 @@ export default function LoginPage() {
       localStorage.removeItem("rememberMe")
     }
 
-    const result = await login(email, password)
+    const result = await sendLoginCode(email)
     if (result.success) {
-      router.push("/") // Rediriger vers la page d'accueil après connexion réussie
+      setStep("code")
     }
-    // sinon l'erreur sera stockée et affichée dans l'UI
+  }
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    clearError()
+    setVerifyError(null)
+    setIsVerifying(true)
+
+    if (!code || code.length !== 6) {
+      setVerifyError("Veuillez entrer un code à 6 chiffres")
+      setIsVerifying(false)
+      return
+    }
+
+    try {
+      // Verify code and create session using NextAuth
+      const result = await signIn("otp", {
+        email,
+        code,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setVerifyError(result.error === "CredentialsSignin" 
+          ? "Code invalide ou expiré. Veuillez demander un nouveau code."
+          : result.error)
+        setIsVerifying(false)
+        return
+      }
+
+      if (result?.ok) {
+        router.push("/")
+      } else {
+        setIsVerifying(false)
+      }
+    } catch (err) {
+      setVerifyError("Une erreur est survenue. Veuillez réessayer.")
+      setIsVerifying(false)
+    }
+  }
+
+  const handleBackToEmail = () => {
+    setStep("email")
+    setCode("")
+    clearError()
+    setVerifyError(null)
   }
 
   return (
@@ -63,79 +114,122 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 🔥 Boîte d'erreur */}
-              {error && (
-                <div className="p-3 text-sm text-destructive-foreground bg-destructive/50 border border-destructive/20 rounded-md">
-                  {error}
-                </div>
-              )}
+            {step === "email" ? (
+              <form onSubmit={handleSendCode} className="space-y-4">
+                {/* 🔥 Boîte d'erreur */}
+                {error && (
+                  <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+                    {error}
+                  </div>
+                )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Entrez votre email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Mot de passe
-                </Label>
-                <div className="relative">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </Label>
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Entrez votre mot de passe"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="Entrez votre email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm pr-10"
+                    disabled={isLoading}
+                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
                 </div>
-              </div>
-              <div className="flex items-center justify-between">
+
                 <div className="flex items-center space-x-2">
                   <input
                     id="remember"
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={isLoading}
                     className="w-4 h-4 text-primary bg-transparent border-2 border-primary/30 rounded focus:ring-primary/50"
                   />
                   <Label htmlFor="remember" className="text-sm text-muted-foreground">
                     Se souvenir de moi
                   </Label>
                 </div>
-              </div>
-              <Button
-                type="submit"
-                className="w-full text-foreground/90 hover:text-primary"
-                size="lg"
-                disabled={isLoading}
-              >
-                {isLoading ? "Connexion en cours..." : "Se connecter"}
-              </Button>
-            </form>
+
+                <Button
+                  type="submit"
+                  className="w-full text-foreground/90 hover:text-primary"
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Envoi en cours..." : "Envoyer le code"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyCode} className="space-y-4">
+                {/* 🔥 Boîte d'erreur */}
+                {(error || verifyError) && (
+                  <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+                    {verifyError || error}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="email-display" className="text-sm font-medium">
+                    Email
+                  </Label>
+                  <Input
+                    id="email-display"
+                    type="email"
+                    value={email}
+                    disabled
+                    className="bg-background/30 border-2 border-primary/20 backdrop-blur-sm opacity-70"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="code" className="text-sm font-medium">
+                    Code de vérification (6 chiffres)
+                  </Label>
+                  <Input
+                    id="code"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={code}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "").slice(0, 6)
+                      setCode(value)
+                    }}
+                    required
+                    disabled={isVerifying}
+                    className="bg-background/50 border-2 border-primary/20 focus:border-primary/50 backdrop-blur-sm text-center text-2xl tracking-widest font-mono"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Entrez le code à 6 chiffres envoyé à {email}
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBackToEmail}
+                    disabled={isVerifying}
+                    className="flex-1"
+                  >
+                    Retour
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="flex-1"
+                    disabled={isVerifying || code.length !== 6}
+                  >
+                    {isVerifying ? "Vérification..." : "Vérifier"}
+                  </Button>
+                </div>
+              </form>
+            )}
             <div className="text-center text-sm text-muted-foreground">
               Vous n'avez pas de compte ?{" "}
               <Link href="/signup" className="text-primary hover:text-primary/80 font-medium transition-colors">

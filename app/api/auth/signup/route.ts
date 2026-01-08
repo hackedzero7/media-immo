@@ -1,9 +1,19 @@
 import { type NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 
 import User from "@/models/User";
 import { dbConnect } from "@/lib/mongodb";
 import Stripe from "stripe";
+
+// TypeScript declaration for global signup data map
+declare global {
+  var signupDataMap: Map<string, {
+    firstName: string
+    lastName: string
+    email: string
+    otp: string
+    expiresAt: Date
+  }> | undefined
+}
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-08-27.basil",
@@ -11,34 +21,74 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { firstName, lastName, email, password, confirmPassword } =
-      await request.json();
+    const { firstName, lastName, email, code } = await request.json();
 
     // Validation
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!firstName || !email || !code) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
       );
     }
 
-    if (password !== confirmPassword) {
+    if (!code || typeof code !== "string" || code.length !== 6) {
       return NextResponse.json(
-        { error: "Passwords do not match" },
+        { error: "Invalid code format" },
         { status: 400 }
       );
     }
 
-    if (password.length < 6) {
+    const normalizedEmail = email.toLowerCase().trim()
+    const normalizedCode = code.trim()
+
+    // Check temporary signup data
+    if (!global.signupDataMap) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters long" },
+        { error: "No signup data found. Please request a new code." },
         { status: 400 }
       );
     }
+
+    const signupData = global.signupDataMap.get(`signup:${normalizedEmail}`);
+    if (!signupData) {
+      return NextResponse.json(
+        { error: "No signup data found. Please request a new code." },
+        { status: 400 }
+      );
+    }
+
+    // Check if code is expired
+    const now = new Date();
+    if (now > signupData.expiresAt) {
+      global.signupDataMap.delete(`signup:${normalizedEmail}`);
+      return NextResponse.json(
+        { error: "Code has expired. Please request a new one." },
+        { status: 401 }
+      );
+    }
+
+    // Verify code
+    if (signupData.otp !== normalizedCode) {
+      return NextResponse.json(
+        { error: "Invalid verification code" },
+        { status: 401 }
+      );
+    }
+
+    // Verify the data matches (allow lastName to be optional/matched flexibly)
+    if (signupData.firstName !== firstName.trim()) {
+      return NextResponse.json(
+        { error: "Data mismatch. Please start the signup process again." },
+        { status: 400 }
+      );
+    }
+    
+    // Use the lastName from signupData if provided, otherwise use firstName
+    const finalLastName = (lastName && lastName.trim()) || signupData.lastName || signupData.firstName;
 
     // Email validation
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(normalizedEmail)) {
       return NextResponse.json(
         { error: "Please enter a valid email address" },
         { status: 400 }
@@ -77,21 +127,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
+      global.signupDataMap.delete(`signup:${normalizedEmail}`);
       return NextResponse.json(
         { error: "User with this email already exists" },
         { status: 409 }
       );
     }
 
-    // Hash password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     const createStripeCustomer = await stripe.customers.create({
-      email: email.toLowerCase().trim(),
-      name: firstName.trim() + " " + lastName.trim(),
+      email: normalizedEmail,
+      name: `${signupData.firstName} ${finalLastName}`.trim(),
     });
 
     console.log("Stripe customer created:", createStripeCustomer);
@@ -103,19 +150,22 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    // Create user
+    // Create user (without password)
     const userData = {
       stripeCustomerId: createStripeCustomer.id,
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.toLowerCase().trim(),
-      password: hashedPassword,
+      firstName: signupData.firstName,
+      lastName: finalLastName,
+      email: normalizedEmail,
+      password: null, // No password for OTP-based auth
       role: "user", // Default role
     };
     const user = new User({ ...userData });
     await user.save();
 
     console.log("User created:", user);
+
+    // Clean up temporary signup data
+    global.signupDataMap.delete(`signup:${normalizedEmail}`);
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user.toObject();
